@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -22,7 +23,9 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.requests
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
@@ -38,7 +41,7 @@ data class Request(
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun RequestsScreen()
+fun RequestsScreen(navController: NavController)
 {
     Column(
         modifier = Modifier.fillMaxSize()
@@ -51,7 +54,7 @@ fun RequestsScreen()
                 .background(color = Color.Black)
         )
         {
-            Text(text = "заявки", fontFamily = FontFamily(Font(com.example.tsukeysmobile.R.font.interblack)), fontSize = 70.sp, modifier = Modifier.offset(x = 20.dp))
+            DefaultText(text = "заявки", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
         }
         LazyColumn(
             modifier = Modifier
@@ -94,10 +97,10 @@ fun RequestsScreen()
             verticalAlignment = Alignment.CenterVertically
         )
         {
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
             {
                 Image(modifier = Modifier.size(25.dp)
-                    .clickable {  },
+                    .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
                     painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
                     contentDescription = null,
                     contentScale = ContentScale.Fit
@@ -108,7 +111,9 @@ fun RequestsScreen()
             Column(horizontalAlignment = Alignment.CenterHorizontally)
             {
                 Image(modifier = Modifier.size(25.dp)
-                    .clickable {  },
+                    .clickable {
+                        navController.navigate(Screen.RequestsScreen.withArgs())
+                    },
                     painter = painterResource(id = com.example.tsukeysmobile.R.drawable.requests),
                     contentDescription = null,
                     contentScale = ContentScale.Fit
@@ -116,10 +121,10 @@ fun RequestsScreen()
                 DefaultText(text = "заявки", size = 15, modifier = Modifier)
             }
 
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
+            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
             {
                 Image(modifier = Modifier.size(25.dp)
-                    .clickable {  },
+                    .clickable { navController.navigate(Screen.ProfileScreen.withArgs()) },
                     painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profile),
                     contentDescription = null,
                     contentScale = ContentScale.Fit

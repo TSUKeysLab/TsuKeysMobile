@@ -36,10 +36,11 @@ import java.util.*
 fun DefaultText(
     text: String,
     size: Int,
+    color: Color = Color.White,
     modifier: Modifier
 )
 {
-    Text(modifier = modifier, overflow = TextOverflow.Ellipsis, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = Color.White, style = TextStyle(
+    Text(modifier = modifier, overflow = TextOverflow.Ellipsis, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = color, style = TextStyle(
             platformStyle = PlatformTextStyle(
                 includeFontPadding = false,
             ),
@@ -53,9 +54,9 @@ fun TimePart(
     end: String
 )
 {
-    DefaultText(text = start, size = 18, Modifier)
-    DefaultText(text = "-", size = 18, Modifier)
-    DefaultText(text = end, size = 18, Modifier)
+    DefaultText(text = start, size = 18, modifier = Modifier)
+    DefaultText(text = "-", size = 18, modifier = Modifier)
+    DefaultText(text = end, size = 18, modifier = Modifier)
 }
 
 @Composable
@@ -63,8 +64,8 @@ fun CabPart(
     cab: String
 )
 {
-    DefaultText(text = cab, size = 40, Modifier)
-    DefaultText(text = "кабинет", size = 20, Modifier)
+    DefaultText(text = cab, size = 40, modifier = Modifier)
+    DefaultText(text = "кабинет", size = 20, modifier = Modifier)
 }
 
 @Composable
@@ -73,9 +74,9 @@ fun DatePart(
     month: String
 )
 {
-    DefaultText(text = day, size = 40, Modifier.absoluteOffset((-8).dp, 3.dp))
+    DefaultText(text = day, size = 40, modifier = Modifier.absoluteOffset((-8).dp, 3.dp))
     Divider(modifier = Modifier.width(100.dp).absoluteOffset(y = (-5).dp), color = Color.White, thickness = 7.dp)
-    DefaultText(text = month, size = 40, Modifier.absoluteOffset(8.dp, (-13).dp))
+    DefaultText(text = month, size = 40, modifier = Modifier.absoluteOffset(8.dp, (-13).dp))
 }
 
 @Composable
@@ -83,7 +84,7 @@ fun WeekDayPart(
     weekDay: String
 )
 {
-    DefaultText(text = weekDay, size = 40, Modifier)
+    DefaultText(text = weekDay, size = 40, modifier = Modifier)
 }
 
 
