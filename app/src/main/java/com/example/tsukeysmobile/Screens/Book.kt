@@ -32,6 +32,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.Views.BookCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 
@@ -75,7 +76,7 @@ fun BookScreen(navController: NavController) {
             contentAlignment = Alignment.Center,
         )
         {
-            //Здесь будет карточка
+            BookCard(navController = navController)
         }
         Row(
             modifier = Modifier

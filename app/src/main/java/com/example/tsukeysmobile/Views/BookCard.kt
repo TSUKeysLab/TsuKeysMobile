@@ -200,6 +200,21 @@ fun BookCard(navController: NavController) {
             }
         }
 
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .background(requestRepeatable, shape = RoundedCornerShape(16.dp))
+                .clickable {
+                    //здесь будет переход на страницу кабинетов
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Кабинет",
+                style = TextStyle(fontSize = 40.sp, fontWeight = FontWeight.Bold),
+                color = Color.White
+            )
+        }
         if (showError) {
             Text(
                 text = "Выберите Дату и Пару",
