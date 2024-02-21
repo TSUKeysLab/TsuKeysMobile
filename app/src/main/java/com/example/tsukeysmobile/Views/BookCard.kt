@@ -61,7 +61,16 @@ fun DropDownText(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookCard(navController: NavController) {
-
+    val list = listOf("1", "2", "3", "4")
+    val currentDate = LocalDate.now()
+    val dateList = (1 until 7).map { currentDate.plusDays(it.toLong()) }
+    val formattedDateList = dateList.mapIndexed { index, date ->
+        when (index) {
+            0 -> "Завтра"
+            1 -> "Послезавтра"
+            else -> date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+        }
+    }
 
     var showError by remember { mutableStateOf(false) }
 
@@ -128,7 +137,15 @@ fun BookCard(navController: NavController) {
                         .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
                 )
                 {
-
+                    formattedDateList.forEach { label ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = label)
+                            }, onClick = {
+                                selectedItem = label
+                                expanded = false
+                            })
+                    }
                 }
             }
         }
@@ -170,7 +187,15 @@ fun BookCard(navController: NavController) {
                         .width(with(LocalDensity.current) { textFieldSizeLes.width.toDp() })
                 )
                 {
-
+                    list.forEach { label ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = label)
+                            }, onClick = {
+                                selectedItemLes = label
+                                expandedLes = false
+                            })
+                    }
                 }
             }
         }
