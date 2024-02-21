@@ -44,7 +44,27 @@ import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun ChangeTransportedParams(
+    text: String?,
+    selectedItemLes: String,
+    selectedItem: String
+): String {
+    var returnedParam = if (text == "Завтра") {
 
+        LocalDate.now().plusDays(1).toString() + " - " + selectedItemLes
+
+    } else if (text == "Послезавтра") {
+
+        LocalDate.now().plusDays(2).toString() + " - " + selectedItemLes
+
+    } else {
+
+        selectedItem + " - " + selectedItemLes
+
+    }
+    return returnedParam
+}
 
 
 @Composable
@@ -205,7 +225,25 @@ fun BookCard(navController: NavController) {
                 .fillMaxWidth(0.9f)
                 .background(requestRepeatable, shape = RoundedCornerShape(16.dp))
                 .clickable {
-                    //здесь будет переход на страницу кабинетов
+                    if (selectedItem.isNotEmpty() && selectedItemLes.isNotEmpty()) {
+                        if (selectedItem == "Завтра") {
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams("Завтра", selectedItem, selectedItemLes )
+                                )
+                            )
+                        } else if (selectedItem == "Послезавтра") {
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams("Послезавтра", selectedItem, selectedItemLes )
+                                )
+                            )
+                        } else {
+                            navController.navigate(Screen.CabScreen.withArgs(ChangeTransportedParams(null, selectedItem, selectedItemLes)))
+                        }
+                    } else {
+                        showError = true
+                    }
                 },
             contentAlignment = Alignment.Center
         ) {
