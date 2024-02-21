@@ -1,8 +1,10 @@
 package com.example.tsukeysmobile
 
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.tsukeysmobile.Screens.BookScreen
 import com.example.tsukeysmobile.Screens.ProfileScreen
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.RequestsScreen
@@ -29,6 +32,7 @@ val requests : MutableList<Request> = mutableStateListOf(Request(UUID.randomUUID
 })
 
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -43,6 +47,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     @Composable
     fun Navigation() {
         val navController = rememberNavController()
@@ -58,7 +63,7 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = com.example.tsukeysmobile.Navigation.Screen.BookScreen.route)
             {
-                ProfileScreen(navController = navController)
+                BookScreen(navController = navController)
             }
         }
     }
