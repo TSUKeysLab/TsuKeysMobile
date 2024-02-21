@@ -47,8 +47,8 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 fun ChangeTransportedParams(
     text: String?,
-    selectedItemLes: String,
-    selectedItem: String
+    selectedItem: String,
+    selectedItemLes: String
 ): String {
     var returnedParam = if (text == "Завтра") {
 
