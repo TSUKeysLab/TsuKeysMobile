@@ -12,3 +12,7 @@ val requestRepeatable = Color(112, 0, 255, 186)
 val profileCol = Color(126, 201, 255, 255)
 
 val darkGreen = Color(14, 145, 0, 255)
+
+val darkGray = Color(54,54,54)
+val gray = Color(84,84,84)
+val lightGray = Color(154,154,154)

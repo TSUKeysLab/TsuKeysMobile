@@ -1,5 +1,4 @@
 package com.example.tsukeysmobile.Screens
-import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -7,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -16,13 +16,13 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.Views.PopupWindowDialog
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 import com.example.tsukeysmobile.ui.theme.darkGreen
 import com.example.tsukeysmobile.ui.theme.profileCol
 import java.util.*
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
 fun ProfileScreen(navController: NavController)
 {
@@ -81,7 +81,11 @@ fun ProfileScreen(navController: NavController)
                                 .weight(1f)
                                 .wrapContentSize()
                                 .background(color = Color.White, shape = RoundedCornerShape(50))
-                                .border(width = 3.dp, shape = RoundedCornerShape(50), color = Color.Black )
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
                         )
                         {
                             DefaultText(text = "Студент", size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
@@ -91,7 +95,11 @@ fun ProfileScreen(navController: NavController)
                                 .weight(1f)
                                 .wrapContentSize()
                                 .background(color = Color.White, shape = RoundedCornerShape(50))
-                                .border(width = 3.dp, shape = RoundedCornerShape(50), color = Color.Black )
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
                         )
                         {
                             DefaultText(text = "972202", size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = Color.Black)
@@ -115,27 +123,13 @@ fun ProfileScreen(navController: NavController)
                 )
             }
             Box(
-                modifier = Modifier.fillMaxSize().absoluteOffset(y = (-25).dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .absoluteOffset(y = (-25).dp),
                 contentAlignment = Alignment.BottomEnd
             )
             {
-                Row(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .background(color = Color.Black, shape = RoundedCornerShape(40))
-                        .border(width = 5.dp, shape = RoundedCornerShape(40), color = Color.White )
-                        .offset(y = (-3).dp)
-                        .clickable {  },
-                    horizontalArrangement = Arrangement.Center
-                )
-                {
-                    Image(modifier = Modifier.size(40.dp).offset(x = 15.dp, y = 10.dp),
-                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.key),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit
-                    )
-                    DefaultText(text = "ключи", size = 40, modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp), color = Color.White)
-                }
+                PopupWindowDialog()
             }
         }
         Row(
