@@ -49,7 +49,14 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
         )
         {
             DefaultText(text = "Бронь", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
-            DefaultText(text = dateAndLes, size = 20, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
+            val lines = dateAndLes.split(" - ")
+            Column(modifier = Modifier.padding(start = 20.dp)) {
+                for(line in lines){
+                    DefaultText(text = line, size = 20, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
+                }
+            }
+
+
         }
         Box(
             modifier = Modifier

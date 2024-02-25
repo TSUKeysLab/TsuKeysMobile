@@ -81,7 +81,7 @@ fun DropDownText(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookCard(navController: NavController) {
-    val list = listOf("1", "2", "3", "4")
+    val list = listOf("1 Пара - 8:45-10:20", "2 Пара - 10:35-12:10", "3 Пара - 12:25-14:00", "4 Пара - 14:45-16:20", "5 Пара - 16:35-18:10", "6 Пара - 18:25-20:00")
     val currentDate = LocalDate.now()
     val dateList = (1 until 7).map { currentDate.plusDays(it.toLong()) }
     val formattedDateList = dateList.mapIndexed { index, date ->
