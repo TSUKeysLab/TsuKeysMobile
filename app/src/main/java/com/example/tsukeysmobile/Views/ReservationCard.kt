@@ -29,7 +29,6 @@ import java.util.UUID
 fun ReservationBoxElement(
     cab: String,
     dateAndLes: String
-
 ) {
     val dl = dateAndLes
     DefaultText(text = "кабинет" + " " + cab + " " + dateAndLes, size = 40, modifier = Modifier)
