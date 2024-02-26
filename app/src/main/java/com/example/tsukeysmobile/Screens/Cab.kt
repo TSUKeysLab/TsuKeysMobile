@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.Views.ReservationCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
@@ -75,7 +76,6 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
             contentAlignment = Alignment.Center,
         )
         {
-
             LazyColumn {
                 items(100) {
                     ReservationCard("1", dateAndLes)
