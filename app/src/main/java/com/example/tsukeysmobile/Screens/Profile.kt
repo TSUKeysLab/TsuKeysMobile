@@ -16,7 +16,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
-import com.example.tsukeysmobile.Views.PopupWindowDialog
+import com.example.tsukeysmobile.Views.KeysMenu
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 import com.example.tsukeysmobile.ui.theme.darkGreen
@@ -129,7 +129,7 @@ fun ProfileScreen(navController: NavController)
                 contentAlignment = Alignment.BottomEnd
             )
             {
-                PopupWindowDialog()
+                KeysMenu()
             }
         }
         Row(

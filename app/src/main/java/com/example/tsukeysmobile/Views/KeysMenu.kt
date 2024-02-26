@@ -17,7 +17,6 @@ import androidx.compose.material.TabRow
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,16 +38,28 @@ fun OutcomeRequestCard(
     Till: String,
 )
 {
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().background(color = Color.Gray, shape = RoundedCornerShape(10.dp)).padding(5.dp))
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
+        .padding(5.dp))
     {
-        Row(modifier = Modifier.fillMaxWidth().padding(5.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp))
         {
             DefaultText(text = "You", size = 20, modifier = Modifier, color = Color.White)
             Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Red, modifier = Modifier.padding(horizontal = 5.dp))
-            Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier.size(30.dp).offset(y = -3.dp).padding(horizontal = 5.dp))
+            Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
+                .size(30.dp)
+                .offset(y = -3.dp)
+                .padding(horizontal = 5.dp))
             DefaultText(text = Sender, size = 20, modifier = Modifier, color = Color.White)
         }
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp).padding(bottom = 5.dp),
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 5.dp)
+            .padding(bottom = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween)
         {
             Box(modifier = Modifier
@@ -75,16 +86,28 @@ fun IncomeRequestCard(
     Till: String,
 )
 {
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight().background(color = Color.Gray, shape = RoundedCornerShape(10.dp)).padding(5.dp))
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
+        .padding(5.dp))
     {
-        Row(modifier = Modifier.fillMaxWidth().padding(5.dp))
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(5.dp))
         {
-            Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier.size(30.dp).offset(y = -3.dp).padding(horizontal = 5.dp))
+            Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
+                .size(30.dp)
+                .offset(y = -3.dp)
+                .padding(horizontal = 5.dp))
             DefaultText(text = Sender, size = 20, modifier = Modifier, color = Color.White)
             Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Green, modifier = Modifier.padding(horizontal = 5.dp))
             DefaultText(text = "You", size = 20, modifier = Modifier, color = Color.White)
         }
-        Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 5.dp).padding(bottom = 5.dp),
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 5.dp)
+            .padding(bottom = 5.dp),
             horizontalArrangement = Arrangement.SpaceBetween)
         {
             Box(modifier = Modifier
@@ -110,27 +133,35 @@ fun ShowOutComing(
     outcoming: MutableList<Request>,
 )
 {
-    LazyColumn(
+    Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 10.dp, horizontal = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-        )
+            .fillMaxSize().padding(bottom = 20.dp),
+        contentAlignment = Alignment.BottomCenter
+    )
     {
-        items(items = outcoming, key = { it.id })
-        { request ->
-            if (!request.visibleState.currentState && !request.visibleState.targetState) requests.remove(request)
-            AnimatedVisibility(
-                modifier = Modifier
-                    .animateItemPlacement(),
-                visibleState = request.visibleState,
-                enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
-            )
-            {
-                request.element()
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(vertical = 10.dp, horizontal = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        )
+        {
+            items(items = outcoming, key = { it.id })
+            { request ->
+                if (!request.visibleState.currentState && !request.visibleState.targetState) requests.remove(request)
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .animateItemPlacement(),
+                    visibleState = request.visibleState,
+                    enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                    exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
+                )
+                {
+                    request.element()
+                }
             }
         }
+        KeysMenuCreateKey()
     }
 }
 
@@ -160,13 +191,14 @@ fun ShowInComing(
             {
                 request.element()
             }
+
         }
     }
 }
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun PopupWindowDialog()
+fun KeysMenu()
 {
     val openDialog = remember { mutableStateOf(false) }
 
