@@ -31,7 +31,6 @@ import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.util.*
 
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun DefaultText(
     text: String,
