@@ -27,17 +27,14 @@ import java.util.UUID
 
 @Composable
 fun ReservationBoxElement(
-    cab: String,
-    dateAndLes: String
+    cab: String
 ) {
-    val dl = dateAndLes
-    DefaultText(text = "кабинет" + " " + cab + " " + dateAndLes, size = 40, modifier = Modifier)
+    DefaultText(text = "кабинет" + " " + cab, size = 40, modifier = Modifier)
 }
 
 @Composable
 fun ReservationCard(
-    cab: String,
-    dateAndLes: String,
+    cab: String
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -68,6 +65,6 @@ fun ReservationCard(
             .clickable { showDialog = true },
         contentAlignment = Alignment.Center
     ) {
-        ReservationBoxElement(cab, dateAndLes)
+        ReservationBoxElement(cab)
     }
 }

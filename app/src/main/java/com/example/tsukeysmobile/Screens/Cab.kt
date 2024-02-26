@@ -1,5 +1,8 @@
 package com.example.tsukeysmobile.Screens
 
+import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,7 +17,13 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -28,15 +37,21 @@ import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.Views.ReservationCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
+import java.time.LocalDate
+import java.util.regex.Pattern
 
+
+@SuppressLint("CoroutineCreationDuringComposition")
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CabScreen(navController: NavController, dateAndLes: String) {
-
-
+    var keys by remember { mutableStateOf<List<KeysDataItem>>(emptyList()) }
+    
     Column(
         modifier = Modifier.fillMaxSize()
     )
@@ -76,12 +91,31 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
             contentAlignment = Alignment.Center,
         )
         {
-            LazyColumn {
-                items(100) {
-                    ReservationCard("1", dateAndLes)
+            val req = RequestsFunctions()
+            val input = dateAndLes
+            val pattern = Pattern.compile("(\\d{4}-\\d{2}-\\d{2}) - (\\d+) Пара")
+            val matcher = pattern.matcher(input)
+
+
+            if (matcher.find()) {
+                val dateStr = matcher.group(1)
+                val numberBeforeParaStr = matcher.group(2)
+
+                val date = LocalDate.parse(dateStr)
+                val numberBeforePara = numberBeforeParaStr.toInt()
+                LaunchedEffect(Unit) {
+                    keys = req.getKeys(date.year, date.monthValue, date.dayOfMonth, numberBeforePara)
                 }
 
+
+                LazyColumn {
+                    items(keys){key->
+                        ReservationCard(cab = key.classroomNumber)
+                    }
+
+                }
             }
+
         }
         Row(
             modifier = Modifier
