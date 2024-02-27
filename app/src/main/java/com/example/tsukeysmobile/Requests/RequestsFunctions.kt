@@ -1,41 +1,83 @@
 package com.example.tsukeysmobile.Requests
 
+import android.util.Log
+import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
+import com.example.tsukeysmobile.Requests.Keys.ReservKey
+import com.example.tsukeysmobile.Views.ChangeTransportedParams
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
-const val AUTHORIZE_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhhbmRpZUBleGFtcGxlLmNvbSIsIm5iZiI6MTcwODg1MTExNywiZXhwIjoxNzA4ODUyMDE3LCJpYXQiOjE3MDg4NTExMTcsImlzcyI6IkpXVFRva2VuIiwiYXVkIjoiSHVtYW4ifQ.2NzEve5kMhFI-fyHPFteCpddb_UEBbCk9fnkI29j7Y0"
-const val BASE_URL = "http://89.111.174.112:8181/swagger/index.html/"
+const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhlbmRvQGV4YW1wbGUuY29tIiwibmJmIjoxNzA5MDQ0MTUwLCJleHAiOjE3MDkwNDUwNTAsImlhdCI6MTcwOTA0NDE1MCwiaXNzIjoiSldUVG9rZW4iLCJhdWQiOiJIdW1hbiJ9.Ri8XAFxrcobUki2jVPMBtaY92SlYWrL9u31nJ43z8Fg"
+const val BASE_URL = "http://89.111.174.112:8181/"
+private val retrofit: Retrofit = Retrofit.Builder()
+    .addConverterFactory(GsonConverterFactory.create())
+    .baseUrl(BASE_URL)
+    .build()
 
 class RequestsFunctions {
 
-    fun GetKeys(year: Int, month: Int, day: Int, timeId: Int): List<KeysDataItem> {
-        val retrofitBuilder = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-            .create(KeysInterface::class.java)
-        val retrofitData = retrofitBuilder.getKeys(AUTHORIZE_TOKEN,year, month, day, timeId, "AvaliableKeys")
-        var keys: List<KeysDataItem> = mutableListOf()
+    suspend fun getKeys(year: Int, month: Int, day: Int, timeId: Int): List<KeysDataItem> {
+        return suspendCoroutine { continuation ->
+            val keysInterface = retrofit.create(KeysInterface::class.java)
+            val retrofitData = keysInterface.getKeys(AUTHORIZE_TOKEN, year, month, day, timeId, "AvailableKeys")
 
+            retrofitData.enqueue(object : Callback<List<KeysDataItem>> {
+                override fun onResponse(
+                    call: Call<List<KeysDataItem>>,
+                    response: Response<List<KeysDataItem>>
+                ) {
+                    if (response.isSuccessful) {
+                        val responseBody = response.body()
+                        val keys = responseBody ?: emptyList()
+                        Log.d("Res", keys.size.toString())
+                        continuation.resume(keys)
+                    } else {
+                        Log.d("Fail", "Unsuccessful response: ${response.code()}")
+                        continuation.resume(emptyList())
+                    }
+                }
 
-        retrofitData.enqueue(object : Callback<List<KeysDataItem>?> {
-            override fun onResponse(
-                call: Call<List<KeysDataItem>?>,
-                response: Response<List<KeysDataItem>?>
-            ) {
-                var responseBody = response.body()!!
-                keys = responseBody
-            }
-
-            override fun onFailure(call: Call<List<KeysDataItem>?>, t: Throwable) {
-                throw Error("")
-            }
-        })
-        return keys
+                override fun onFailure(call: Call<List<KeysDataItem>>, t: Throwable) {
+                    Log.d("Fail", t.message!!)
+                    continuation.resume(emptyList())
+                }
+            })
+        }
     }
+
+    suspend fun reservationCab(date: String, les: Int, cab: String): Int{
+        return suspendCoroutine { continuation ->
+            val keysInterface = retrofit.create(KeysInterface::class.java)
+            val requestBody = ReservKey(cab, les, date)
+            val retrofitData = keysInterface.postReservation(AUTHORIZE_TOKEN, requestBody)
+            retrofitData.enqueue(object : Callback<Void?> {
+                override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
+                    if (response.isSuccessful) {
+                        Log.d("Cool", "All right!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
+                    else{
+                        Log.d("Bad", "All bad!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
+
+                }
+
+                override fun onFailure(call: Call<Void?>, t: Throwable) {
+                    Log.d("Bad", "All bad!: ${t.message}")
+                }
+            })
+
+        }
+    }
+
+
+
 }
