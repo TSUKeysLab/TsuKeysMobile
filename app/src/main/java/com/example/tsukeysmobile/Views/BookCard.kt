@@ -88,7 +88,7 @@ fun BookCard(navController: NavController) {
         when (index) {
             0 -> "Завтра"
             1 -> "Послезавтра"
-            else -> date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            else -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
 

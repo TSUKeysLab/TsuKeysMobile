@@ -21,7 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.ui.theme.requestSingle
 import kotlinx.coroutines.CoroutineScope
@@ -37,12 +39,14 @@ fun ReservationBoxElement(
 
 @Composable
 fun ReservationCard(
+    navController: NavController,
     cab: String,
     date: String,
     les: Int,
 ) {
     var showDialog by remember { mutableStateOf(false) }
-
+    var makeRequest by remember { mutableStateOf(false) }
+    var color by remember { mutableStateOf(false) }
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
@@ -51,21 +55,20 @@ fun ReservationCard(
             confirmButton = {
                 Button(onClick = {
                     showDialog = false
-//                    val req = RequestsFunctions()
-//                    LaunchedEffect(Unit){
-//
-//                    }
-//                    req.reservationCab(date, les, cab)
+                    makeRequest = true
                 }) {
                     Text("Да")
                 }
                 Button(onClick = { showDialog = false }) {
                     Text("Закрыть")
                 }
-
-
             }
         )
+    }
+
+
+    if(makeRequest){
+        onClickRequest(cab, date, les, navController)
     }
 
     Box(
@@ -79,4 +82,39 @@ fun ReservationCard(
     ) {
         ReservationBoxElement(cab)
     }
+}
+
+@Composable
+fun onClickRequest(
+    cab: String,
+    date: String,
+    les: Int,
+    navController: NavController
+){
+    var showDialog by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit){
+        val req = RequestsFunctions()
+        var res = req.reservationCab(date, les, cab)
+        if(res == 400){
+            showDialog = true
+        }
+        else{
+            navController.navigate(Screen.BookScreen.withArgs())
+        }
+    }
+    if(showDialog){
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Вы уже бронировали кабинет на этот день") },
+            text = { Text(text = "Нажмите 'ОК', чтобы продолжить") },
+            confirmButton = {
+                Button(onClick = {
+                    showDialog = false
+                }) {
+                    Text("Ок")
+                }
+            }
+        )
+    }
+
 }

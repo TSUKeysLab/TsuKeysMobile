@@ -14,7 +14,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhlbmRvQGV4YW1wbGUuY29tIiwibmJmIjoxNzA4OTY0NjUzLCJleHAiOjE3MDg5NjU1NTMsImlhdCI6MTcwODk2NDY1MywiaXNzIjoiSldUVG9rZW4iLCJhdWQiOiJIdW1hbiJ9.6XY2kGdONukMyvpUJYpaDvCpGNPktCLQfDCG65ajy8c"
+const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhlbmRvQGV4YW1wbGUuY29tIiwibmJmIjoxNzA5MDQ0MTUwLCJleHAiOjE3MDkwNDUwNTAsImlhdCI6MTcwOTA0NDE1MCwiaXNzIjoiSldUVG9rZW4iLCJhdWQiOiJIdW1hbiJ9.Ri8XAFxrcobUki2jVPMBtaY92SlYWrL9u31nJ43z8Fg"
 const val BASE_URL = "http://89.111.174.112:8181/"
 private val retrofit: Retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
@@ -52,14 +52,22 @@ class RequestsFunctions {
         }
     }
 
-    suspend fun reservationCab(date: String, les: Int, cab: String){
+    suspend fun reservationCab(date: String, les: Int, cab: String): Int{
         return suspendCoroutine { continuation ->
             val keysInterface = retrofit.create(KeysInterface::class.java)
             val requestBody = ReservKey(cab, les, date)
             val retrofitData = keysInterface.postReservation(AUTHORIZE_TOKEN, requestBody)
             retrofitData.enqueue(object : Callback<Void?> {
                 override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
-                    Log.d("Cool", "All right!: ${response.code()}")
+                    if (response.isSuccessful) {
+                        Log.d("Cool", "All right!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
+                    else{
+                        Log.d("Bad", "All bad!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
+
                 }
 
                 override fun onFailure(call: Call<Void?>, t: Throwable) {

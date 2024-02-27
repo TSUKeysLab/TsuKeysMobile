@@ -110,7 +110,7 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
 
                 LazyColumn {
                     items(keys){key->
-                        ReservationCard(cab = key.classroomNumber, dateStr, numberBeforePara)
+                        ReservationCard(navController, cab = key.classroomNumber, dateStr, numberBeforePara)
                     }
 
                 }
