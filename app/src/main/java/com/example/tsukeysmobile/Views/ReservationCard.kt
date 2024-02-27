@@ -13,6 +13,7 @@ import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -21,7 +22,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.ui.theme.requestSingle
+import kotlinx.coroutines.CoroutineScope
 import java.util.Date
 import java.util.UUID
 
@@ -34,7 +37,9 @@ fun ReservationBoxElement(
 
 @Composable
 fun ReservationCard(
-    cab: String
+    cab: String,
+    date: String,
+    les: Int,
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -44,7 +49,14 @@ fun ReservationCard(
             title = { Text(text = "Забронировать данный кабинет?") },
             text = { Text(text = "Если хотите забронировать, нажмите 'Да'") },
             confirmButton = {
-                Button(onClick = { showDialog = false }) {
+                Button(onClick = {
+                    showDialog = false
+//                    val req = RequestsFunctions()
+//                    LaunchedEffect(Unit){
+//
+//                    }
+//                    req.reservationCab(date, les, cab)
+                }) {
                     Text("Да")
                 }
                 Button(onClick = { showDialog = false }) {

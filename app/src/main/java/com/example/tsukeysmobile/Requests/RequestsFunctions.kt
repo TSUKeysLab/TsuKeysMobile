@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
+import com.example.tsukeysmobile.Requests.Keys.ReservKey
 import com.example.tsukeysmobile.Views.ChangeTransportedParams
 import retrofit2.Call
 import retrofit2.Callback
@@ -50,4 +51,25 @@ class RequestsFunctions {
             })
         }
     }
+
+    suspend fun reservationCab(date: String, les: Int, cab: String){
+        return suspendCoroutine { continuation ->
+            val keysInterface = retrofit.create(KeysInterface::class.java)
+            val requestBody = ReservKey(cab, les, date)
+            val retrofitData = keysInterface.postReservation(AUTHORIZE_TOKEN, requestBody)
+            retrofitData.enqueue(object : Callback<Void?> {
+                override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
+                    Log.d("Cool", "All right!: ${response.code()}")
+                }
+
+                override fun onFailure(call: Call<Void?>, t: Throwable) {
+                    Log.d("Bad", "All bad!: ${t.message}")
+                }
+            })
+
+        }
+    }
+
+
+
 }
