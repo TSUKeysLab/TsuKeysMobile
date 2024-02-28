@@ -17,10 +17,13 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.tsukeysmobile.Screens.BookScreen
+import com.example.tsukeysmobile.Screens.CabScreen
 import com.example.tsukeysmobile.Screens.ProfileScreen
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.RequestsScreen
@@ -64,6 +67,19 @@ class MainActivity : ComponentActivity() {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.BookScreen.route)
             {
                 BookScreen(navController = navController)
+            }
+            composable(
+                route = com.example.tsukeysmobile.Navigation.Screen.CabScreen.route + "/{dateAndLes}",
+                arguments = listOf(
+                    navArgument("dateAndLes") {
+                        type = NavType.StringType
+                        defaultValue = "Some Default"
+                        nullable = true
+                    },
+                )
+            ) { entry ->
+                val dateAndLes = entry.arguments?.getString("dateAndLes")
+                CabScreen(dateAndLes = dateAndLes!!, navController = navController)
             }
         }
     }
