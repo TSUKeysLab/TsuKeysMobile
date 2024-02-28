@@ -1,5 +1,6 @@
 package com.example.tsukeysmobile
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,12 +23,16 @@ import com.example.tsukeysmobile.Screens.ProfileScreen
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.RequestsScreen
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
+import com.example.tsukeysmobile.ui.theme.requestRepeatable
+import com.example.tsukeysmobile.ui.theme.requestSingle
 import java.util.*
 
 val requests : MutableList<Request> = mutableStateListOf(Request(UUID.randomUUID()) {
-    Divider(modifier = Modifier.fillMaxWidth(0.9f).offset(x = 20.dp).padding(vertical = 50.dp), color = Color.Black, thickness = 6.dp)
+    Divider(modifier = Modifier
+        .fillMaxWidth(0.9f)
+        .offset(x = 20.dp)
+        .padding(vertical = 50.dp), color = Color.Black, thickness = 6.dp)
 })
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,11 +43,42 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 )
                 {
+                    requests.add(0, Request(UUID.randomUUID()) {
+                        RequestCard(
+                            id = UUID.randomUUID(),
+                            status = "Approved",
+                            date = "14.02",
+                            cab = "227",
+                            time = "18:25-20:00",
+                            type = requestSingle,
+                        )
+                    })
+                    requests.add(0, Request(UUID.randomUUID()) {
+                        RequestCard(
+                            id = UUID.randomUUID(),
+                            status = "Pending",
+                            date = "14.02",
+                            cab = "227",
+                            time = "18:25-20:00",
+                            type = requestSingle,
+                        )
+                    })
+                    requests.add(Request(UUID.randomUUID()) {
+                        RequestCard(
+                            id = UUID.randomUUID(),
+                            status = "",
+                            date = "вт",
+                            cab = "227",
+                            time = "18:25-20:00",
+                            type = requestRepeatable,
+                        )
+                    })
                     Navigation()
                 }
             }
         }
     }
+    @SuppressLint("UnrememberedMutableState")
     @Composable
     fun Navigation() {
         val navController = rememberNavController()
@@ -50,7 +86,7 @@ class MainActivity : ComponentActivity() {
         {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
             {
-                RequestsScreen(navController = navController)
+                RequestsScreen(navController = navController, requests = requests)
             }
             composable(route = com.example.tsukeysmobile.Navigation.Screen.ProfileScreen.route)
             {

@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
 import com.example.tsukeysmobile.Screens.Request
-import com.example.tsukeysmobile.requests
 import com.example.tsukeysmobile.ui.theme.*
 import java.util.*
 
@@ -148,7 +147,7 @@ fun ShowOutComing(
         {
             items(items = outcoming, key = { it.id })
             { request ->
-                if (!request.visibleState.currentState && !request.visibleState.targetState) requests.remove(request)
+                if (!request.visibleState.currentState && !request.visibleState.targetState) outcoming.remove(request)
                 AnimatedVisibility(
                     modifier = Modifier
                         .animateItemPlacement(),
@@ -180,7 +179,7 @@ fun ShowInComing(
     {
         items(items = incoming, key = { it.id })
         { request ->
-            if (!request.visibleState.currentState && !request.visibleState.targetState) requests.remove(request)
+            if (!request.visibleState.currentState && !request.visibleState.targetState) incoming.remove(request)
             AnimatedVisibility(
                 modifier = Modifier
                     .animateItemPlacement(),

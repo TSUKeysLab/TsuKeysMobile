@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
-import com.example.tsukeysmobile.requests
+
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 import java.util.*
@@ -39,9 +39,9 @@ data class Request(
     val visibleState = MutableTransitionState(false).apply { targetState = true }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
-fun RequestsScreen(navController: NavController)
+fun RequestsScreen(navController: NavController, requests: MutableList<Request>)
 {
     Column(
         modifier = Modifier.fillMaxSize()

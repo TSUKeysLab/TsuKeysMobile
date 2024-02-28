@@ -40,7 +40,6 @@ import androidx.compose.ui.window.PopupProperties
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
 import com.example.tsukeysmobile.Screens.Request
-import com.example.tsukeysmobile.requests
 import com.example.tsukeysmobile.ui.theme.*
 import java.util.*
 import java.util.EnumSet.range
@@ -50,6 +49,7 @@ import kotlin.math.exp
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TextFieldSample(
+    placeholder: String = "",
     value: String = "",
     enabled: Boolean = true,
     modifier: Modifier,
@@ -62,6 +62,7 @@ fun TextFieldSample(
     }
     TextField(
         value = text,
+        placeholder = {DefaultText(text = placeholder, size = 20, modifier = Modifier, color = Color.Gray)},
         enabled = enabled,
         onValueChange = { newText ->
             run {
@@ -208,7 +209,7 @@ fun KeysMenuCreateKey()
                     }
                     DefaultText(text = "кому:", size = 20, modifier = Modifier, color = Color.White)
                     val message = remember{mutableStateOf("")}
-                    TextFieldSample(modifier = Modifier, onValueChange = {message.value = it})
+                    TextFieldSample(modifier = Modifier, onValueChange = {message.value = it}, placeholder = "введите id пользователя")
 
                     DefaultText(text = "ключ:", size = 20, modifier = Modifier, color = Color.White)
                     var expanded by remember { mutableStateOf(false) }
