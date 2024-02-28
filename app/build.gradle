@@ -49,6 +49,9 @@ android {
 
 
 dependencies {
+    implementation "com.squareup.retrofit2:retrofit:2.7.1"
+    implementation "com.squareup.retrofit2:converter:converter-gson:2.1.0"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.27.0"
     implementation "androidx.navigation:navigation-compose:2.4.0-alpha10"
     implementation "androidx.navigation:navigation-fragment-ktx:2.3.5"
     implementation "androidx.navigation:navigation-ui-ktx:2.3.5"

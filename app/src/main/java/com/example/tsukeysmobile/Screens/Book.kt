@@ -57,7 +57,7 @@ fun BookScreen(navController: NavController) {
                 .zIndex(1f)
         )
         {
-            DefaultText(text = "Бронь", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
+            DefaultText(text = "бронь", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
         }
         Box(
             modifier = Modifier

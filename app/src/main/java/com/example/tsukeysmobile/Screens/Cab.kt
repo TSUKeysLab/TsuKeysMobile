@@ -64,7 +64,7 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
                 .zIndex(1f)
         )
         {
-            DefaultText(text = "Бронь", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
+            DefaultText(text = "бронь", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
             val lines = dateAndLes.split(" - ")
             Column(modifier = Modifier.padding(start = 20.dp)) {
                 for(line in lines){
