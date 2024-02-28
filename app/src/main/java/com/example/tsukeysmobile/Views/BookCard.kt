@@ -44,7 +44,27 @@ import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
+fun ChangeTransportedParams(
+    text: String?,
+    selectedItem: String,
+    selectedItemLes: String
+): String {
+    var returnedParam = if (text == "Завтра") {
 
+        LocalDate.now().plusDays(1).toString() + " - " + selectedItemLes
+
+    } else if (text == "Послезавтра") {
+
+        LocalDate.now().plusDays(2).toString() + " - " + selectedItemLes
+
+    } else {
+
+        selectedItem + " - " + selectedItemLes
+
+    }
+    return returnedParam
+}
 
 
 @Composable
@@ -61,14 +81,14 @@ fun DropDownText(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookCard(navController: NavController) {
-    val list = listOf("1", "2", "3", "4")
+    val list = listOf("1 Пара - 8:45-10:20", "2 Пара - 10:35-12:10", "3 Пара - 12:25-14:00", "4 Пара - 14:45-16:20", "5 Пара - 16:35-18:10", "6 Пара - 18:25-20:00")
     val currentDate = LocalDate.now()
     val dateList = (1 until 7).map { currentDate.plusDays(it.toLong()) }
     val formattedDateList = dateList.mapIndexed { index, date ->
         when (index) {
             0 -> "Завтра"
             1 -> "Послезавтра"
-            else -> date.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+            else -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
 
@@ -205,7 +225,25 @@ fun BookCard(navController: NavController) {
                 .fillMaxWidth(0.9f)
                 .background(requestRepeatable, shape = RoundedCornerShape(16.dp))
                 .clickable {
-                    //здесь будет переход на страницу кабинетов
+                    if (selectedItem.isNotEmpty() && selectedItemLes.isNotEmpty()) {
+                        if (selectedItem == "Завтра") {
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams("Завтра", selectedItem, selectedItemLes )
+                                )
+                            )
+                        } else if (selectedItem == "Послезавтра") {
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams("Послезавтра", selectedItem, selectedItemLes )
+                                )
+                            )
+                        } else {
+                            navController.navigate(Screen.CabScreen.withArgs(ChangeTransportedParams(null, selectedItem, selectedItemLes)))
+                        }
+                    } else {
+                        showError = true
+                    }
                 },
             contentAlignment = Alignment.Center
         ) {
