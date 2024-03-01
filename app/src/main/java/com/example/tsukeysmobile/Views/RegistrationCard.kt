@@ -101,7 +101,6 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val dateParse = inputFormat.parse("$year-$month-$dayOfMonth")
                 date.value = outputFormat.format(dateParse!!)
-
             }, year, month, day
         )
 
@@ -126,25 +125,10 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
             },
             enabled = false,
             visualTransformation = VisualTransformation.None,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                focusedLabelColor = Color.White,
-                focusedBorderColor = Color.Black,
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
+            colors = error(type, date.value),
             maxLines = 1,
         )
-
+        error(type, date.value)
 
     } else if (type == "Gender") {
 
@@ -171,20 +155,7 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 Icon(icon, "", Modifier.clickable() { expanded = !expanded })
             },
             enabled = false,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                disabledBorderColor = MaterialTheme.colorScheme.outline,
-                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
-                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
-            ),
+            colors = error(type, selectedItem),
         )
         DropdownMenu(
             expanded = expanded,
@@ -275,8 +246,45 @@ fun error(type: String, text: String): TextFieldColors {
                 unfocusedBorderColor = Color.Red
             )
         }
+    } else if (type == "Date" || type == "Gender") {
+        if(text != ""){
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = Color.Black,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        else{
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = Color.Red,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     } else {
-        if(text.isNotEmpty() && text[0].isUpperCase()){
+        if (text.isNotEmpty() && text[0].isUpperCase()) {
             return OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -285,8 +293,7 @@ fun error(type: String, text: String): TextFieldColors {
                 focusedBorderColor = Color.Black,
                 unfocusedBorderColor = Color.Black
             )
-        }
-        else{
+        } else {
             return OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -299,26 +306,6 @@ fun error(type: String, text: String): TextFieldColors {
     }
 }
 
-@Composable
-fun showCalendar(context: Context, returned: Int) {
-    val year: Int
-    val month: Int
-    val day: Int
-
-    val calendar = Calendar.getInstance()
-    year = calendar.get(Calendar.YEAR)
-    month = calendar.get(Calendar.MONTH)
-    day = calendar.get(Calendar.DAY_OF_MONTH)
-    calendar.time = Date()
-
-    val date = remember { mutableStateOf("") }
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            date.value = "$year-$month-$dayOfMonth"
-        }, year, month, day
-    )
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -342,13 +329,11 @@ fun RegistrationCard() {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        RegisterElement("имя", "admin", "name")
-        RegisterElement("фамилия", "admin", "surname")
-        RegisterElement("дата рождения", "2003.02.26", "Date")
-        RegisterElement("пол", "мужской", "Gender")
-        RegisterElement("email", "admin@example.com", "email")
-        RegisterElement("пароль", "********", "password")
-        RegisterElement("повторите пароль", "********", "secondPas")
-
+        RegisterElement("имя", "Введите имя", "name")
+        RegisterElement("фамилия", "Введите фамилию", "surname")
+        RegisterElement("дата рождения", "Выберите дату рождения", "Date")
+        RegisterElement("пол", "Выберите пол", "Gender")
+        RegisterElement("email", "Введите почту", "email")
+        RegisterElement("пароль", "Введите пароль", "password")
     }
 }

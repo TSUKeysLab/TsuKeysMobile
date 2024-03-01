@@ -1,5 +1,7 @@
 package com.example.tsukeysmobile.Screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,6 +41,7 @@ import com.example.tsukeysmobile.Views.RegistrationCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun RegistrationScreen() {
