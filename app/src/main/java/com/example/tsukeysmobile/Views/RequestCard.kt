@@ -42,9 +42,9 @@ fun DefaultText(
 )
 {
     Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = color, style = TextStyle(
-            platformStyle = PlatformTextStyle(
-                includeFontPadding = false,
-            ),
+//            platformStyle = PlatformTextStyle(
+//                includeFontPadding = false,
+//            ),
         )
     )
 }
