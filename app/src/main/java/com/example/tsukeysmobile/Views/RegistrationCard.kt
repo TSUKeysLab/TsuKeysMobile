@@ -3,6 +3,7 @@ package com.example.tsukeysmobile.Views
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
+import android.util.Patterns
 import android.widget.DatePicker
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -43,6 +44,7 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
@@ -59,9 +61,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.tsukeysmobile.DefaultText
+import java.text.SimpleDateFormat
 import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -92,8 +96,12 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
         val datePickerDialog = DatePickerDialog(
             LocalContext.current,
             { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-                date.value = "$year-$month-$dayOfMonth"
-                date.value = date.value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+
+                val inputFormat = SimpleDateFormat("yyyy-M-d", Locale.getDefault())
+                val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                val dateParse = inputFormat.parse("$year-$month-$dayOfMonth")
+                date.value = outputFormat.format(dateParse!!)
+
             }, year, month, day
         )
 
@@ -217,20 +225,79 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 imeAction = ImeAction.Next
             ),
             visualTransformation = VisualTransformation.None,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                disabledContainerColor = Color.White,
-                focusedLabelColor = Color.White,
-                focusedBorderColor = Color.Black,
-
-
-                ),
+            colors = error(type, text.text),
             maxLines = 1,
         )
     }
 }
 
+@Composable
+fun error(type: String, text: String): TextFieldColors {
+
+    if (type == "email") {
+        if (Patterns.EMAIL_ADDRESS.matcher(text).matches()) {
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black
+            )
+        } else {
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Red,
+                unfocusedBorderColor = Color.Red
+            )
+        }
+    } else if (type == "password") {
+        val passwordRegex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[a-zA-Z]).{8,}\$"
+        if (text.matches(passwordRegex.toRegex())) {
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black
+            )
+        } else {
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Red,
+                unfocusedBorderColor = Color.Red
+            )
+        }
+    } else {
+        if(text.isNotEmpty() && text[0].isUpperCase()){
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black
+            )
+        }
+        else{
+            return OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Red,
+                unfocusedBorderColor = Color.Red
+            )
+        }
+    }
+}
 
 @Composable
 fun showCalendar(context: Context, returned: Int) {
@@ -275,13 +342,13 @@ fun RegistrationCard() {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        RegisterElement("имя", "admin", "")
-        RegisterElement("фамилия", "admin", "")
-        RegisterElement("дата рождения", "26.02.2003", "Date")
+        RegisterElement("имя", "admin", "name")
+        RegisterElement("фамилия", "admin", "surname")
+        RegisterElement("дата рождения", "2003.02.26", "Date")
         RegisterElement("пол", "мужской", "Gender")
-        RegisterElement("email", "admin@example.com", "")
-        RegisterElement("пароль", "********", "")
-        RegisterElement("повторите пароль", "********", "")
+        RegisterElement("email", "admin@example.com", "email")
+        RegisterElement("пароль", "********", "password")
+        RegisterElement("повторите пароль", "********", "secondPas")
 
     }
 }
