@@ -1,5 +1,10 @@
 package com.example.tsukeysmobile.Views
 
+import android.app.DatePickerDialog
+import android.content.Context
+import android.os.Build
+import android.widget.DatePicker
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,9 +26,12 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,9 +43,11 @@ import androidx.compose.ui.graphics.Color
 
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -49,7 +59,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.tsukeysmobile.DefaultText
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RegisterElementOutlined(fieldText: String, type: String) {
 
@@ -64,10 +78,31 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
         Icons.Filled.KeyboardArrowDown
     }
     if (type == "Date") {
+        val year: Int
+        val month: Int
+        val day: Int
+
+        val calendar = Calendar.getInstance()
+        year = calendar.get(Calendar.YEAR)
+        month = calendar.get(Calendar.MONTH)
+        day = calendar.get(Calendar.DAY_OF_MONTH)
+        calendar.time = Date()
+
+        var date = remember { mutableStateOf("") }
+        val datePickerDialog = DatePickerDialog(
+            LocalContext.current,
+            { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+                date.value = "$year-$month-$dayOfMonth"
+                date.value = date.value.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+            }, year, month, day
+        )
+
+
+
         OutlinedTextField(
-            value = text,
+            value = date.value,
             onValueChange = {
-                text = it
+                date.value = it
             },
             modifier = Modifier
                 .fillMaxWidth(),
@@ -77,15 +112,11 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
             trailingIcon = {
                 Icon(
                     imageVector = Icons.Default.DateRange,
-                    contentDescription = null
+                    contentDescription = null,
+                    Modifier.clickable() { datePickerDialog.show() }
                 )
             },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.None,
-                autoCorrect = true,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
+            enabled = false,
             visualTransformation = VisualTransformation.None,
             colors = OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
@@ -93,9 +124,19 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 disabledContainerColor = Color.White,
                 focusedLabelColor = Color.White,
                 focusedBorderColor = Color.Black,
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
-            maxLines = 1
+            maxLines = 1,
         )
+
 
     } else if (type == "Gender") {
 
@@ -109,15 +150,13 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 },
             label = {
                 Text(
-                    text = "Выберите пол", color = if (selectedItem != "") {
-                        if (expanded == true) {
-                            Color.White
-                        } else {
-                            Color.DarkGray
-                        }
+                    text = "Выберите пол", color =
+                    if (expanded == true && selectedItem != "") {
+                        Color.White
                     } else {
-                        Color.Black
+                        Color.DarkGray
                     }
+
                 )
             },
             trailingIcon = {
@@ -128,8 +167,16 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
                 disabledContainerColor = Color.White,
-
-                ),
+                disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                disabledBorderColor = MaterialTheme.colorScheme.outline,
+                disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledTrailingIconColor = MaterialTheme.colorScheme.onSurface,
+                disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
         )
         DropdownMenu(
             expanded = expanded,
@@ -186,6 +233,28 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
 
 
 @Composable
+fun showCalendar(context: Context, returned: Int) {
+    val year: Int
+    val month: Int
+    val day: Int
+
+    val calendar = Calendar.getInstance()
+    year = calendar.get(Calendar.YEAR)
+    month = calendar.get(Calendar.MONTH)
+    day = calendar.get(Calendar.DAY_OF_MONTH)
+    calendar.time = Date()
+
+    val date = remember { mutableStateOf("") }
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+            date.value = "$year-$month-$dayOfMonth"
+        }, year, month, day
+    )
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
 fun RegisterElement(topLabel: String, text: String, type: String) {
     Column(modifier = Modifier.fillMaxWidth(0.9f), horizontalAlignment = Alignment.Start) {
         DefaultText(text = topLabel, size = 20, modifier = Modifier.offset(y = 12.dp))
@@ -194,6 +263,7 @@ fun RegisterElement(topLabel: String, text: String, type: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
 fun RegistrationCard() {
