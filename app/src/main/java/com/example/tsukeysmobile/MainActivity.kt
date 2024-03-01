@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -39,6 +40,8 @@ val requests : MutableList<Request> = mutableStateListOf(Request(UUID.randomUUID
         .offset(x = 20.dp)
         .padding(vertical = 50.dp), color = Color.Black, thickness = 6.dp)
 })
+var AUTHORIZE_TOKEN: String = ""
+
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {

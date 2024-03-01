@@ -1,11 +1,12 @@
 package com.example.tsukeysmobile.Requests
 
 import android.util.Log
-import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
+import com.example.tsukeysmobile.Requests.Interface.RegistrationInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
-import com.example.tsukeysmobile.Views.ChangeTransportedParams
+import com.example.tsukeysmobile.Requests.Registration.RegistrationDataItem
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,7 +15,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhlbmRvQGV4YW1wbGUuY29tIiwibmJmIjoxNzA5MTI1ODM5LCJleHAiOjE3MDkxMjY3MzksImlhdCI6MTcwOTEyNTgzOSwiaXNzIjoiSldUVG9rZW4iLCJhdWQiOiJIdW1hbiJ9.pTAYVVx3kp0GRUdcMx_1Ulrq7y3lcpYKkLBZHiQE9FY"
 const val BASE_URL = "http://89.111.174.112:8181/"
 private val retrofit: Retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
@@ -77,7 +77,32 @@ class RequestsFunctions {
 
         }
     }
+    suspend fun postRegistration(name: String, surname: String, bd: String, gender: String, email: String, password: String): Int{
+        return suspendCoroutine { continuation ->
+            val regInterface = retrofit.create(RegistrationInterface::class.java)
+            val requestBody = RegistrationDataItem(name, surname, bd, gender, email, password)
+            val retrofitData = regInterface.postUserRegistration(requestBody)
+            retrofitData.enqueue(object : Callback<String?> {
+                override fun onResponse(call: Call<String?>, response: Response<String?>) {
+                    if (response.isSuccessful) {
+                        Log.d("Cool", "All right!: ${response.code()}")
+                        AUTHORIZE_TOKEN = "Bearer " + response.body()
+                        continuation.resume(response.code())
+                    }
+                    else{
+                        Log.d("Bad", "All bad!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
 
+                }
+
+                override fun onFailure(call: Call<String?>, t: Throwable) {
+                    Log.d("Bad", "All bad!: ${t.message}")
+                }
+            })
+
+        }
+    }
 
 
 }
