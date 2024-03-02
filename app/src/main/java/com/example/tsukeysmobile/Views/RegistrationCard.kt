@@ -3,6 +3,7 @@ package com.example.tsukeysmobile.Views
 import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.util.Patterns
 import android.widget.DatePicker
 import androidx.annotation.RequiresApi
@@ -20,17 +21,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -41,11 +36,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.TextFieldColors
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -62,25 +55,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.tsukeysmobile.DefaultText
 import java.text.SimpleDateFormat
-import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun RegisterElementOutlined(fieldText: String, type: String) {
+fun RegisterElementOutlined(fieldText: String, type: String): String {
 
-    val listOfGenders = listOf("мужчина", "женщина")
-    var text by remember { mutableStateOf(TextFieldValue("")) }
-    var expanded by remember { mutableStateOf(false) }
-    var selectedItem by remember { mutableStateOf("") }
-    var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    val icon = if (expanded) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
     if (type == "Date") {
         val year: Int
         val month: Int
@@ -105,14 +88,13 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
         )
 
 
-
         OutlinedTextField(
             value = date.value,
             onValueChange = {
                 date.value = it
             },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth(0.9f),
             shape = RoundedCornerShape(8.dp),
             textStyle = TextStyle(color = Color.Black),
             label = { Text(fieldText) },
@@ -129,54 +111,73 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
             maxLines = 1,
         )
         error(type, date.value)
+        return date.value
 
     } else if (type == "Gender") {
-
-        OutlinedTextField(
-            value = selectedItem,
-            onValueChange = { selectedItem = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .onGloballyPositioned { coordinates ->
-                    textFieldSize = coordinates.size.toSize()
+        val listOfGenders = listOf("Male", "Female")
+        var expanded by remember { mutableStateOf(false) }
+        var selectedItem by remember { mutableStateOf("") }
+        var textFieldSize by remember { mutableStateOf(Size.Zero) }
+        val icon = if (expanded) {
+            Icons.Filled.KeyboardArrowUp
+        } else {
+            Icons.Filled.KeyboardArrowDown
+        }
+        Column {
+            OutlinedTextField(
+                value = selectedItem,
+                onValueChange = {
+                    selectedItem = it
                 },
-            label = {
-                Text(
-                    text = "Выберите пол", color =
-                    if (expanded == true && selectedItem != "") {
-                        Color.White
-                    } else {
-                        Color.DarkGray
-                    }
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .onGloballyPositioned { coordinates ->
+                        textFieldSize = coordinates.size.toSize()
+                    },
+                label = {
+                    Text(
+                        text = "Выберите пол", color =
+                        if (expanded == true && selectedItem != "") {
+                            Color.White
+                        } else {
+                            Color.DarkGray
+                        }
 
-                )
-            },
-            trailingIcon = {
-                Icon(icon, "", Modifier.clickable() { expanded = !expanded })
-            },
-            enabled = false,
-            colors = error(type, selectedItem),
-        )
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-            modifier = Modifier
-                .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-        )
-        {
-            listOfGenders.forEach { label ->
-                DropdownMenuItem(
-                    text = {
-                        Text(text = label, color = Color.Black)
-                    }, onClick = {
-                        selectedItem = label
-                        expanded = false
-                    })
+                    )
+                },
+                trailingIcon = {
+                    Icon(icon, "", Modifier.clickable() { expanded = !expanded })
+                },
+                enabled = false,
+                colors = error(type, selectedItem),
+            )
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+            )
+            {
+                listOfGenders.forEach { label ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(text = label, color = Color.Black)
+                        }, onClick = {
+                            selectedItem = label
+                            expanded = false
+                        })
+                }
             }
         }
 
+        return selectedItem
+
     } else {
-        val maxChar = 20
+        var text by remember { mutableStateOf(TextFieldValue("")) }
+        var maxChar = 15
+        if(type == "email"){
+            maxChar = 20
+        }
         OutlinedTextField(
             value = text,
             onValueChange = {
@@ -185,7 +186,7 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
                 }
             },
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth(0.9f),
             shape = RoundedCornerShape(8.dp),
             textStyle = TextStyle(color = Color.Black),
             label = { Text(fieldText) },
@@ -199,6 +200,7 @@ fun RegisterElementOutlined(fieldText: String, type: String) {
             colors = error(type, text.text),
             maxLines = 1,
         )
+        return text.text
     }
 }
 
@@ -247,7 +249,7 @@ fun error(type: String, text: String): TextFieldColors {
             )
         }
     } else if (type == "Date" || type == "Gender") {
-        if(text != ""){
+        if (text != "") {
             return OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -265,8 +267,7 @@ fun error(type: String, text: String): TextFieldColors {
                 disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
                 disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
-        }
-        else{
+        } else {
             return OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
@@ -308,19 +309,29 @@ fun error(type: String, text: String): TextFieldColors {
 
 
 @RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
-fun RegisterElement(topLabel: String, text: String, type: String) {
+fun RegisterElement(topLabel: String, text: String, type: String): String {
     Column(modifier = Modifier.fillMaxWidth(0.9f), horizontalAlignment = Alignment.Start) {
         DefaultText(text = topLabel, size = 20, modifier = Modifier.offset(y = 12.dp))
         Spacer(modifier = Modifier.height(12.dp))
-        RegisterElementOutlined(text, type)
+
     }
+    return (RegisterElementOutlined(text, type))
 }
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Preview
 @Composable
-fun RegistrationCard() {
+fun RegistrationCard(): List<String> {
+    var name = ""
+    var surname = ""
+    var bd = ""
+    var gender = ""
+    var email = ""
+    var password = ""
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -329,11 +340,13 @@ fun RegistrationCard() {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
-        RegisterElement("имя", "Введите имя", "name")
-        RegisterElement("фамилия", "Введите фамилию", "surname")
-        RegisterElement("дата рождения", "Выберите дату рождения", "Date")
-        RegisterElement("пол", "Выберите пол", "Gender")
-        RegisterElement("email", "Введите почту", "email")
-        RegisterElement("пароль", "Введите пароль", "password")
+        name = RegisterElement("имя", "Введите имя", "name")
+        surname = RegisterElement("фамилия", "Введите фамилию", "surname")
+        bd = RegisterElement("дата рождения", "Выберите дату рождения", "Date")
+        gender = RegisterElement("пол", "Выберите пол", "Gender")
+        email = RegisterElement("email", "Введите почту", "email")
+        password = RegisterElement("пароль", "Введите пароль", "password")
+
     }
+    return listOf(name, surname, bd, gender, email, password)
 }
