@@ -174,7 +174,10 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
 
     } else {
         var text by remember { mutableStateOf(TextFieldValue("")) }
-        val maxChar = 15
+        var maxChar = 15
+        if(type == "email"){
+            maxChar = 20
+        }
         OutlinedTextField(
             value = text,
             onValueChange = {

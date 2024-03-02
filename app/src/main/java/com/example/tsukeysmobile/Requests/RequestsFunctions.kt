@@ -2,6 +2,7 @@ package com.example.tsukeysmobile.Requests
 
 import android.util.Log
 import com.example.tsukeysmobile.AUTHORIZE_TOKEN
+import com.example.tsukeysmobile.Requests.Interface.CheckAuthInterface
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Interface.RegistrationInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
@@ -122,6 +123,30 @@ class RequestsFunctions {
                     Log.d("Bad", "All bad!: ${t.message}")
                 }
             })
+        }
+    }
+    suspend fun checkUserAuth(): Int{
+        return suspendCoroutine { continuation ->
+            val authInterface = retrofit.create(CheckAuthInterface::class.java)
+
+            val retrofitData = authInterface.getProfile(AUTHORIZE_TOKEN)
+            retrofitData.enqueue(object : Callback<Void?> {
+                override fun onResponse(call: Call<Void?>, response: Response<Void?>) {
+                    if (response.isSuccessful) {
+                        Log.d("Cool", "All right!: ${response.code()}")
+                        continuation.resume(response.code())
+                    } else {
+                        Log.d("Bad", "All bad!: ${response.code()}")
+                        continuation.resume(response.code())
+                    }
+
+                }
+
+                override fun onFailure(call: Call<Void?>, t: Throwable) {
+                    Log.d("Bad", "All bad!: ${t.message}")
+                }
+            })
+
         }
     }
 
