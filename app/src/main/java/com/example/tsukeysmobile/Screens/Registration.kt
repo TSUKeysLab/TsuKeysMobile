@@ -1,6 +1,7 @@
 package com.example.tsukeysmobile.Screens
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -38,6 +39,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
@@ -48,9 +50,8 @@ import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(navController: NavController) {
     var elements: List<String>
     var ready by remember { mutableStateOf(false) }
 
@@ -104,6 +105,10 @@ fun RegistrationScreen() {
                         email = elements[4],
                         password = elements[5]
                     )
+                    if(resp.code() == 200){
+                        navController.navigate(Screen.RequestsScreen.withArgs())
+                    }
+                    ready = false
                 }
             }
         }

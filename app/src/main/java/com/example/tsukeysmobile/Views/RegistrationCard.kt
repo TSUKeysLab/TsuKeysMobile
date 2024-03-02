@@ -114,7 +114,7 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
         return date.value
 
     } else if (type == "Gender") {
-        val listOfGenders = listOf("мужчина", "женщина")
+        val listOfGenders = listOf("Male", "Female")
         var expanded by remember { mutableStateOf(false) }
         var selectedItem by remember { mutableStateOf("") }
         var textFieldSize by remember { mutableStateOf(Size.Zero) }
@@ -174,7 +174,7 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
 
     } else {
         var text by remember { mutableStateOf(TextFieldValue("")) }
-        val maxChar = 20
+        val maxChar = 15
         OutlinedTextField(
             value = text,
             onValueChange = {

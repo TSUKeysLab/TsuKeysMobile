@@ -6,6 +6,7 @@ import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Interface.RegistrationInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
+import com.example.tsukeysmobile.Requests.Registration.AuthTokenDataItem
 import com.example.tsukeysmobile.Requests.Registration.RegistrationDataItem
 import retrofit2.Call
 import retrofit2.Callback
@@ -23,10 +24,16 @@ private val retrofit: Retrofit = Retrofit.Builder()
 
 class RequestsFunctions {
 
-    suspend fun getKeys(year: Int, month: Int, day: Int, timeId: Int): List<KeysDataItem> {
+    suspend fun getKeys(
+        year: Int,
+        month: Int,
+        day: Int,
+        timeId: Int
+    ): List<KeysDataItem> {
         return suspendCoroutine { continuation ->
             val keysInterface = retrofit.create(KeysInterface::class.java)
-            val retrofitData = keysInterface.getKeys(AUTHORIZE_TOKEN, year, month, day, timeId, "AvailableKeys")
+            val retrofitData =
+                keysInterface.getKeys(AUTHORIZE_TOKEN, year, month, day, timeId, "AvailableKeys")
 
             retrofitData.enqueue(object : Callback<List<KeysDataItem>> {
                 override fun onResponse(
@@ -52,7 +59,11 @@ class RequestsFunctions {
         }
     }
 
-    suspend fun reservationCab(date: String, les: Int, cab: String): Int{
+    suspend fun reservationCab(
+        date: String,
+        les: Int,
+        cab: String
+    ): Int {
         return suspendCoroutine { continuation ->
             val keysInterface = retrofit.create(KeysInterface::class.java)
             val requestBody = ReservKey(cab, les, date)
@@ -62,8 +73,7 @@ class RequestsFunctions {
                     if (response.isSuccessful) {
                         Log.d("Cool", "All right!: ${response.code()}")
                         continuation.resume(response.code())
-                    }
-                    else{
+                    } else {
                         Log.d("Bad", "All bad!: ${response.code()}")
                         continuation.resume(response.code())
                     }
@@ -77,30 +87,41 @@ class RequestsFunctions {
 
         }
     }
-    suspend fun postRegistration(name: String, surname: String, bd: String, gender: String, email: String, password: String): Int{
+
+    suspend fun postRegistration(
+        name: String,
+        surname: String,
+        bd: String,
+        gender: String,
+        email: String,
+        password: String
+    ): Response<AuthTokenDataItem> {
         return suspendCoroutine { continuation ->
             val regInterface = retrofit.create(RegistrationInterface::class.java)
             val requestBody = RegistrationDataItem(name, surname, bd, gender, email, password)
             val retrofitData = regInterface.postUserRegistration(requestBody)
-            retrofitData.enqueue(object : Callback<String?> {
-                override fun onResponse(call: Call<String?>, response: Response<String?>) {
+
+            retrofitData.enqueue(object : Callback<AuthTokenDataItem> {
+                override fun onResponse(
+                    call: Call<AuthTokenDataItem>,
+                    response: Response<AuthTokenDataItem>
+                ) {
                     if (response.isSuccessful) {
                         Log.d("Cool", "All right!: ${response.code()}")
-                        AUTHORIZE_TOKEN = "Bearer " + response.body()
-                        continuation.resume(response.code())
-                    }
-                    else{
+                        val token = response.body()?.token
+                        AUTHORIZE_TOKEN = "Bearer $token"
+                        Log.d("Auf", AUTHORIZE_TOKEN)
+                        continuation.resume(response)
+                    } else {
                         Log.d("Bad", "All bad!: ${response.code()}")
-                        continuation.resume(response.code())
+                        continuation.resume(response)
                     }
-
                 }
 
-                override fun onFailure(call: Call<String?>, t: Throwable) {
+                override fun onFailure(call: Call<AuthTokenDataItem>, t: Throwable) {
                     Log.d("Bad", "All bad!: ${t.message}")
                 }
             })
-
         }
     }
 
