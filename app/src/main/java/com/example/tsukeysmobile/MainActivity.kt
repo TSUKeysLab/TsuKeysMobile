@@ -30,6 +30,7 @@ import com.example.tsukeysmobile.Screens.ProfileScreen
 import com.example.tsukeysmobile.Screens.RegistrationScreen
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.RequestsScreen
+import com.example.tsukeysmobile.Views.AuthorizationScreen
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import com.example.tsukeysmobile.ui.theme.requestSingle
@@ -95,7 +96,7 @@ class MainActivity : ComponentActivity() {
     fun Navigation()
     {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = com.example.tsukeysmobile.Navigation.Screen.RegScreen.route)
+        NavHost(navController = navController, startDestination = com.example.tsukeysmobile.Navigation.Screen.AuthScreen.route)
         {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
             {
@@ -112,6 +113,10 @@ class MainActivity : ComponentActivity() {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.RegScreen.route)
             {
                 RegistrationScreen(navController = navController)
+            }
+            composable(route = com.example.tsukeysmobile.Navigation.Screen.AuthScreen.route)
+            {
+                AuthorizationScreen(navController = navController)
             }
             composable(
                 route = com.example.tsukeysmobile.Navigation.Screen.CabScreen.route + "/{dateAndLes}",

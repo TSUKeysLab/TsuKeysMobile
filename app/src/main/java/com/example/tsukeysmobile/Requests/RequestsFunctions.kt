@@ -2,9 +2,9 @@ package com.example.tsukeysmobile.Requests
 
 import android.util.Log
 import com.example.tsukeysmobile.AUTHORIZE_TOKEN
-import com.example.tsukeysmobile.Requests.Interface.CheckAuthInterface
+import com.example.tsukeysmobile.Requests.Authorization.AuthorizationDataItem
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
-import com.example.tsukeysmobile.Requests.Interface.RegistrationInterface
+import com.example.tsukeysmobile.Requests.Interface.UserInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
 import com.example.tsukeysmobile.Requests.Registration.AuthTokenDataItem
@@ -98,7 +98,7 @@ class RequestsFunctions {
         password: String
     ): Response<AuthTokenDataItem> {
         return suspendCoroutine { continuation ->
-            val regInterface = retrofit.create(RegistrationInterface::class.java)
+            val regInterface = retrofit.create(UserInterface::class.java)
             val requestBody = RegistrationDataItem(name, surname, bd, gender, email, password)
             val retrofitData = regInterface.postUserRegistration(requestBody)
 
@@ -127,7 +127,7 @@ class RequestsFunctions {
     }
     suspend fun checkUserAuth(): Int{
         return suspendCoroutine { continuation ->
-            val authInterface = retrofit.create(CheckAuthInterface::class.java)
+            val authInterface = retrofit.create(UserInterface::class.java)
 
             val retrofitData = authInterface.getProfile(AUTHORIZE_TOKEN)
             retrofitData.enqueue(object : Callback<Void?> {
@@ -147,6 +147,38 @@ class RequestsFunctions {
                 }
             })
 
+        }
+    }
+    suspend fun postAuthorization(
+        email: String,
+        password: String
+    ): Response<AuthTokenDataItem> {
+        return suspendCoroutine { continuation ->
+            val regInterface = retrofit.create(UserInterface::class.java)
+            val requestBody = AuthorizationDataItem(email, password)
+            val retrofitData = regInterface.postUserAuthentication(requestBody)
+
+            retrofitData.enqueue(object : Callback<AuthTokenDataItem> {
+                override fun onResponse(
+                    call: Call<AuthTokenDataItem>,
+                    response: Response<AuthTokenDataItem>
+                ) {
+                    if (response.isSuccessful) {
+                        Log.d("Cool", "All right!: ${response.code()}")
+                        val token = response.body()?.token
+                        AUTHORIZE_TOKEN = "Bearer $token"
+                        Log.d("Auf", AUTHORIZE_TOKEN)
+                        continuation.resume(response)
+                    } else {
+                        Log.d("Bad", "All bad!: ${response.code()}")
+                        continuation.resume(response)
+                    }
+                }
+
+                override fun onFailure(call: Call<AuthTokenDataItem>, t: Throwable) {
+                    Log.d("Bad", "All bad!: ${t.message}")
+                }
+            })
         }
     }
 
