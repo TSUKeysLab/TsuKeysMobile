@@ -49,7 +49,9 @@ object GlobalVariables {
     var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
 }
 
-@SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState")
+@SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState",
+    "CoroutineCreationDuringComposition"
+)
 @OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun RequestsScreen(navController: NavController)
@@ -72,7 +74,7 @@ fun RequestsScreen(navController: NavController)
         LaunchedEffect(Unit) {
             coroutineScope.launch {
                 val response = requestService.getRequests(AUTHORIZE_TOKEN).awaitResponse().body()?.requests
-                requests = response!!.map { Request(id = it.id, { RequestCard(id = it.id, status = it.status, date = it.dateOfBooking, cab = it.classroomNumber, time= it.startTime+'-'+it.endTime,type = requestSingle)}) }.toMutableStateList()
+                if (response!=null) requests = response.map { Request(id = it.id, { RequestCard(id = it.id, status = it.status, date = it.dateOfBooking, cab = it.classroomNumber, time= it.startTime+'-'+it.endTime,type = requestSingle)}) }.toMutableStateList()
             }
         }
         LazyColumn(
@@ -95,7 +97,16 @@ fun RequestsScreen(navController: NavController)
 
             items(items = requests, key = { it.id })
             { request ->
-                if (!request.visibleState.currentState && !request.visibleState.targetState) requests.remove(request)
+                if (!request.visibleState.currentState && !request.visibleState.targetState) {
+                    val coroutineScope = rememberCoroutineScope()
+
+                    LaunchedEffect(Unit) {
+                        coroutineScope.launch {
+                            val response = requestService.deleteRequest(AUTHORIZE_TOKEN,request.id).awaitResponse().body()
+                            requests.remove(request)
+                        }
+                    }
+                }
                 AnimatedVisibility(
                     modifier = Modifier
                         .animateItemPlacement(),
