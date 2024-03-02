@@ -2,9 +2,8 @@ package com.example.tsukeysmobile.Requests
 
 import android.util.Log
 import com.example.tsukeysmobile.AUTHORIZE_TOKEN
-import com.example.tsukeysmobile.Requests.Interface.CheckAuthInterface
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
-import com.example.tsukeysmobile.Requests.Interface.RegistrationInterface
+import com.example.tsukeysmobile.Requests.Interface.UserInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
 import com.example.tsukeysmobile.Requests.Registration.AuthTokenDataItem
@@ -98,7 +97,7 @@ class RequestsFunctions {
         password: String
     ): Response<AuthTokenDataItem> {
         return suspendCoroutine { continuation ->
-            val regInterface = retrofit.create(RegistrationInterface::class.java)
+            val regInterface = retrofit.create(UserInterface::class.java)
             val requestBody = RegistrationDataItem(name, surname, bd, gender, email, password)
             val retrofitData = regInterface.postUserRegistration(requestBody)
 
@@ -127,7 +126,7 @@ class RequestsFunctions {
     }
     suspend fun checkUserAuth(): Int{
         return suspendCoroutine { continuation ->
-            val authInterface = retrofit.create(CheckAuthInterface::class.java)
+            val authInterface = retrofit.create(UserInterface::class.java)
 
             val retrofitData = authInterface.getProfile(AUTHORIZE_TOKEN)
             retrofitData.enqueue(object : Callback<Void?> {
