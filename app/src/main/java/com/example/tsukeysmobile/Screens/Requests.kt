@@ -1,5 +1,7 @@
 package com.example.tsukeysmobile.Screens
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.core.tween
@@ -25,7 +27,7 @@ import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.RequestCard
 import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Interface.RequestsInterface
-import com.example.tsukeysmobile.Screens.GlobalVariables.requests
+import com.example.tsukeysmobile.Views.RequestActionsMenu
 import com.example.tsukeysmobile.retrofit
 
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
@@ -43,12 +45,10 @@ data class Request(
     val visibleState = MutableTransitionState(false).apply { targetState = true }
 }
 
+var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
 val requestService: RequestsInterface = retrofit.create(RequestsInterface::class.java)
-@SuppressLint("MutableCollectionMutableState")
-object GlobalVariables {
-    var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
-}
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState",
     "CoroutineCreationDuringComposition"
 )
@@ -56,112 +56,118 @@ object GlobalVariables {
 @Composable
 fun RequestsScreen(navController: NavController)
 {
-    Column(
-        modifier = Modifier.fillMaxSize()
-    )
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
     {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(height = 80.dp)
-                .background(color = Color.Black)
+        Column(
+            modifier = Modifier.fillMaxSize()
         )
         {
-            DefaultText(text = "заявки", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
-        }
-        val coroutineScope = rememberCoroutineScope()
-
-        LaunchedEffect(Unit) {
-            coroutineScope.launch {
-                val response = requestService.getRequests(AUTHORIZE_TOKEN).awaitResponse().body()?.requests
-                if (response!=null) requests = response.map { Request(id = it.id, { RequestCard(id = it.id, status = it.status, date = it.dateOfBooking, cab = it.classroomNumber, time= it.startTime+'-'+it.endTime,type = requestSingle)}) }.toMutableStateList()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(height = 80.dp)
+                    .background(color = Color.Black)
+            )
+            {
+                DefaultText(text = "заявки", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
             }
-        }
-        LazyColumn(
-            modifier = Modifier
-                .weight(0.9f)
-                .fillMaxWidth()
-                .background(
-                    brush = Brush.horizontalGradient(
-                        listOf(
-                            backgroundCol1,
-                            backgroundCol2,
-                            backgroundCol2
+            val coroutineScope = rememberCoroutineScope()
+
+            LaunchedEffect(Unit) {
+                coroutineScope.launch {
+                    val response = requestService.getRequests(AUTHORIZE_TOKEN).awaitResponse().body()?.requests
+                    if (response!=null) requests = response.map { Request(id = it.id, { RequestCard(id = it.id, status = it.status, date = it.dateOfBooking, cab = it.classroomNumber, time= it.startTime+'-'+it.endTime,type = requestSingle)}) }.toMutableStateList()
+                }
+            }
+            LazyColumn(
+                modifier = Modifier
+                    .weight(0.9f)
+                    .fillMaxWidth()
+                    .background(
+                        brush = Brush.horizontalGradient(
+                            listOf(
+                                backgroundCol1,
+                                backgroundCol2,
+                                backgroundCol2
+                            )
                         )
                     )
+                    .padding(vertical = 30.dp, horizontal = 20.dp),
+
                 )
-                .padding(vertical = 30.dp, horizontal = 20.dp),
+            {
 
-        )
-        {
+                items(items = requests, key = { it.id })
+                { request ->
+                    if (!request.visibleState.currentState && !request.visibleState.targetState) {
 
-            items(items = requests, key = { it.id })
-            { request ->
-                if (!request.visibleState.currentState && !request.visibleState.targetState) {
-                    val coroutineScope = rememberCoroutineScope()
-
-                    LaunchedEffect(Unit) {
-                        coroutineScope.launch {
-                            val response = requestService.deleteRequest(AUTHORIZE_TOKEN,request.id).awaitResponse().body()
-                            requests.remove(request)
+                        LaunchedEffect(Unit) {
+                            coroutineScope.launch {
+                                val response = requestService.deleteRequest(AUTHORIZE_TOKEN,request.id).awaitResponse().body()
+                                requests.remove(request)
+                            }
                         }
                     }
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItemPlacement(),
+                        visibleState = request.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
+                    )
+                    {
+                        request.element()
+                    }
                 }
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .animateItemPlacement(),
-                    visibleState = request.visibleState,
-                    enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                    exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
-                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(height = 80.dp)
+                    .background(color = Color.Black),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
                 {
-                    request.element()
+                    Image(modifier = Modifier
+                        .size(25.dp)
+                        .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
+                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
+                    DefaultText(text = "бронь", size = 15, modifier = Modifier)
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally)
+                {
+                    Image(modifier = Modifier
+                        .size(25.dp)
+                        .clickable {
+                            navController.navigate(Screen.RequestsScreen.withArgs())
+                        },
+                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.requests),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
+                    DefaultText(text = "заявки", size = 15, modifier = Modifier)
+                }
+
+                Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
+                {
+                    Image(modifier = Modifier
+                        .size(25.dp)
+                        .clickable { navController.navigate(Screen.ProfileScreen.withArgs()) },
+                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profile),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
+                    )
+                    DefaultText(text = "профиль", size = 15, modifier = Modifier)
                 }
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(height = 80.dp)
-                .background(color = Color.Black),
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalAlignment = Alignment.CenterVertically
-        )
-        {
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
-            {
-                Image(modifier = Modifier.size(25.dp)
-                    .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
-                    painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit
-                )
-                DefaultText(text = "бронь", size = 15, modifier = Modifier)
-            }
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally)
-            {
-                Image(modifier = Modifier.size(25.dp)
-                    .clickable {
-                        navController.navigate(Screen.RequestsScreen.withArgs())
-                    },
-                    painter = painterResource(id = com.example.tsukeysmobile.R.drawable.requests),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit
-                )
-                DefaultText(text = "заявки", size = 15, modifier = Modifier)
-            }
-
-            Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.alpha(0.5f))
-            {
-                Image(modifier = Modifier.size(25.dp)
-                    .clickable { navController.navigate(Screen.ProfileScreen.withArgs()) },
-                    painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profile),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit
-                )
-                DefaultText(text = "профиль", size = 15, modifier = Modifier)
-            }
-        }
+        RequestActionsMenu()
     }
 }
