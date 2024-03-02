@@ -4,6 +4,7 @@ package com.example.tsukeysmobile.Views
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -36,7 +39,9 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.Navigation.Screen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -94,11 +99,9 @@ fun AuthorizationElement(topLabel: String, text: String, type: String): String {
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview
 @Composable
-fun AuthorizationCard(): List<String> {
+fun AuthorizationCard(navController: NavController): List<String> {
 
-    var showError by remember { mutableStateOf(false)}
     var email = ""
     var password = ""
 
@@ -131,10 +134,6 @@ fun AuthorizationCard(): List<String> {
         ) {
             password = AuthorizationElement("пароль", "Введите пароль", "password")
         }
-        if (showError) {
-            DefaultText(text = "Неверные почта или пароль", size = 15, Color.Red, modifier = Modifier)
-        }
-
     }
     return listOf(email, password)
 }
