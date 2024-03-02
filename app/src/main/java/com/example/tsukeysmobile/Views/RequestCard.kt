@@ -4,6 +4,7 @@ package com.example.tsukeysmobile
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -29,20 +30,22 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.util.*
+import javax.net.ssl.SSLEngineResult.Status
 
 
-@OptIn(ExperimentalTextApi::class)
 @Composable
 fun DefaultText(
     text: String,
     size: Int,
+    color: Color = Color.White,
     modifier: Modifier
 )
 {
-    Text(modifier = modifier, overflow = TextOverflow.Ellipsis, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = Color.White, style = TextStyle(
-            platformStyle = PlatformTextStyle(
-                includeFontPadding = false,
-            ),
+    Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = color, style = TextStyle(
+
+//            platformStyle = PlatformTextStyle(
+//                includeFontPadding = false,
+//            ),
         )
     )
 }
@@ -53,18 +56,32 @@ fun TimePart(
     end: String
 )
 {
-    DefaultText(text = start, size = 18, Modifier)
-    DefaultText(text = "-", size = 18, Modifier)
-    DefaultText(text = end, size = 18, Modifier)
+    DefaultText(text = start, size = 18, modifier = Modifier)
+    DefaultText(text = "-", size = 18, modifier = Modifier)
+    DefaultText(text = end, size = 18, modifier = Modifier)
 }
 
+@Composable
+fun StatusPart(
+    status: String
+)
+{
+    val color: Color
+    if (status == "Pending") color = Color.Gray else if (status == "Approved") color = Color.Green else color = Color.Red
+    Row(
+        modifier = Modifier.wrapContentSize().background(color = color, shape = RoundedCornerShape(50))
+    )
+    {
+        DefaultText(text = status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+    }
+}
 @Composable
 fun CabPart(
     cab: String
 )
 {
-    DefaultText(text = cab, size = 40, Modifier)
-    DefaultText(text = "кабинет", size = 20, Modifier)
+    DefaultText(text = cab, size = 40, modifier = Modifier)
+    DefaultText(text = "кабинет", size = 20, modifier = Modifier.offset(y = -10.dp))
 }
 
 @Composable
@@ -73,9 +90,11 @@ fun DatePart(
     month: String
 )
 {
-    DefaultText(text = day, size = 40, Modifier.absoluteOffset((-8).dp, 3.dp))
-    Divider(modifier = Modifier.width(100.dp).absoluteOffset(y = (-5).dp), color = Color.White, thickness = 7.dp)
-    DefaultText(text = month, size = 40, Modifier.absoluteOffset(8.dp, (-13).dp))
+    DefaultText(text = day, size = 40, modifier = Modifier.absoluteOffset((-8).dp, 3.dp))
+    Divider(modifier = Modifier
+        .width(100.dp)
+        .absoluteOffset(y = (-5).dp), color = Color.White, thickness = 7.dp)
+    DefaultText(text = month, size = 40, modifier = Modifier.absoluteOffset(8.dp, (-13).dp))
 }
 
 @Composable
@@ -83,7 +102,7 @@ fun WeekDayPart(
     weekDay: String
 )
 {
-    DefaultText(text = weekDay, size = 40, Modifier)
+    DefaultText(text = weekDay, size = 40, modifier = Modifier)
 }
 
 
@@ -92,6 +111,7 @@ fun WeekDayPart(
 @Composable
 fun RequestCard(
     id: UUID,
+    status: String,
     date: String,
     cab: String,
     time: String,
@@ -102,7 +122,8 @@ fun RequestCard(
     Card(
         modifier = Modifier
             .padding(vertical = 10.dp)
-            .fillMaxWidth().height(90.dp)
+            .fillMaxWidth()
+            .height(90.dp)
             .offset { IntOffset(x = offsetX.toInt(), y = 0) }
             .pointerInput(Unit)
             {
@@ -113,9 +134,8 @@ fun RequestCard(
                     },
                     onDragEnd =
                     {
-                        if (offsetX >- 400) offsetX = 0f
-                        else
-                        {
+                        if (offsetX > -400) offsetX = 0f
+                        else {
                             val index = requests.indexOf(requests.find { it.id == id })
                             println(index)
                             requests[index].visibleState.targetState = false
@@ -157,11 +177,14 @@ fun RequestCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
+                if (status!="") StatusPart(status)
                 CabPart(cab)
             }
 
             Column(
-                modifier = Modifier.weight(0.22f).padding(vertical = 10.dp),
+                modifier = Modifier
+                    .weight(0.22f)
+                    .padding(vertical = 10.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
