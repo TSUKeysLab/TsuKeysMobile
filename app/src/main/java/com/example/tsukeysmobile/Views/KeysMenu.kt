@@ -266,12 +266,8 @@ fun KeysMenu()
                     val tabs = listOf("входящие", "исходящие")
 
                     val incoming : MutableList<Request> = mutableStateListOf()
-                    incoming.add(Request(UUID.randomUUID(), {IncomeRequestCard(Sender = "Саня", Cab = "227", Till = "14:00")}))
-                    incoming.add(Request(UUID.randomUUID(), {IncomeRequestCard(Sender = "Артем", Cab = "226", Till = "16:20")}))
 
                     val outcoming : MutableList<Request> = mutableStateListOf()
-                    outcoming.add(Request(UUID.randomUUID(), { OutcomeRequestCard(Sender = "Саня", Cab = "227", Till = "14:00") }))
-                    outcoming.add(Request(UUID.randomUUID(), { OutcomeRequestCard(Sender = "Артем", Cab = "226", Till = "16:20") }))
 
                     Column(modifier = Modifier.fillMaxWidth())
                     {
