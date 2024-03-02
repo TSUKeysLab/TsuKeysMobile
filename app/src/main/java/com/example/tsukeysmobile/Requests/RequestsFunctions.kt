@@ -1,11 +1,9 @@
 package com.example.tsukeysmobile.Requests
 
 import android.util.Log
-import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
-import com.example.tsukeysmobile.Views.ChangeTransportedParams
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -14,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImhlbmRvQGV4YW1wbGUuY29tIiwibmJmIjoxNzA5MTI1ODM5LCJleHAiOjE3MDkxMjY3MzksImlhdCI6MTcwOTEyNTgzOSwiaXNzIjoiSldUVG9rZW4iLCJhdWQiOiJIdW1hbiJ9.pTAYVVx3kp0GRUdcMx_1Ulrq7y3lcpYKkLBZHiQE9FY"
+const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJuYmYiOjE3MDkzOTUyNzcsImV4cCI6MTcwOTM5NjE3NywiaWF0IjoxNzA5Mzk1Mjc3LCJpc3MiOiJKV1RUb2tlbiIsImF1ZCI6Ikh1bWFuIn0.h1fDwzZjekdiLjAKajN6nfw-_QkO1gjrfzo6sy3ghZw"
 const val BASE_URL = "http://89.111.174.112:8181/"
 private val retrofit: Retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())

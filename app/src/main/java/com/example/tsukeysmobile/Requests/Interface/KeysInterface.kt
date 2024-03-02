@@ -24,6 +24,7 @@ interface KeysInterface {
     @POST("request/create")
     fun postReservation(
         @Header("Authorization") token: String,
-        @Body request: ReservKey): Call<Void>
+        @Body request: ReservKey
+    ): Call<Void>
 
 }
