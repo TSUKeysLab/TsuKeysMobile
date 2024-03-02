@@ -122,7 +122,7 @@ fun AuthorizationScreen(navController: NavController) {
                 colors = ButtonDefaults.buttonColors(backgroundColor = Color.White),
             ) {
                 DefaultText(
-                    text = "Готово",
+                    text = "Войти",
                     size = 20,
                     color = Color.Black,
                     modifier = Modifier
