@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -44,7 +46,7 @@ import com.example.tsukeysmobile.ui.theme.backgroundCol2
 fun AuthorizationScreen(navController: NavController) {
     var elements: List<String>
     var ready by remember { mutableStateOf(false) }
-    var showError by remember { mutableStateOf(false)}
+    var showError by remember { mutableStateOf(false) }
 
 
 
@@ -61,8 +63,8 @@ fun AuthorizationScreen(navController: NavController) {
         )
         {
             DefaultText(
-                text = "регистрация",
-                size = 55,
+                text = "вход",
+                size = 70,
                 modifier = Modifier.offset(x = 20.dp, y = 12.dp)
             )
         }
@@ -83,25 +85,28 @@ fun AuthorizationScreen(navController: NavController) {
                 .padding(horizontal = 20.dp),
         )
         {
-//            elements = AuthorizationCard(navController)
-//            if (showError) {
-//                DefaultText(text = "Неверные почта или пароль", size = 15, Color.Red, modifier = Modifier)
-//            }
-//            ClickableText(text = AnnotatedString("Зарегистрироваться"), onClick = {navController.navigate(Screen.RegScreen.withArgs())})
-//            if (ready == true) {
-//                val req = RequestsFunctions()
-//                LaunchedEffect(Unit) {
-//                    val resp = req.postRegistration(
-//                        email = elements[0],
-//                        password = elements[1]
-//                    )
-//                    if(resp.code() == 200){
-//                        navController.navigate(Screen.RequestsScreen.withArgs())
-//                    }
-//                    ready = false
-//                }
-//            }
+
+            elements = AuthorizationCard(navController, showError)
+            if (ready == true) {
+                val req = RequestsFunctions()
+                LaunchedEffect(Unit) {
+                    val resp = req.postAuthorization(
+                        email = elements[0],
+                        password = elements[1]
+                    )
+                    ready = false
+
+                    if (resp.code() == 200) {
+                        showError = false
+                        navController.navigate(Screen.RequestsScreen.withArgs())
+                    } else {
+                        showError = true
+                    }
+                }
+            }
+
         }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()

@@ -31,7 +31,7 @@ fun ProfileScreen(navController: NavController)
     val req = RequestsFunctions()
     LaunchedEffect(Unit) {
         if (req.checkUserAuth() == 401 || req.checkUserAuth() == 500) {
-            navController.navigate(Screen.RegScreen.withArgs())
+            navController.navigate(Screen.AuthScreen.withArgs())
         }
     }
 

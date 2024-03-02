@@ -1,5 +1,6 @@
 package com.example.tsukeysmobile.Requests.Interface
 
+import com.example.tsukeysmobile.Requests.Authorization.AuthorizationDataItem
 import com.example.tsukeysmobile.Requests.Registration.AuthTokenDataItem
 import com.example.tsukeysmobile.Requests.Registration.RegistrationDataItem
 import retrofit2.Call
@@ -25,9 +26,9 @@ interface UserInterface {
     ): Call<Void>
 
     @Headers("Content-Type: application/json")
-    @POST("user/register")
+    @POST("user/login")
     fun postUserAuthentication(
-        @Body request: AuthTokenDataItem
+        @Body request: AuthorizationDataItem
     ): Call<AuthTokenDataItem>
 
 }

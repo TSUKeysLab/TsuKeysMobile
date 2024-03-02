@@ -37,8 +37,10 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
@@ -100,7 +102,7 @@ fun AuthorizationElement(topLabel: String, text: String, type: String): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AuthorizationCard(navController: NavController): List<String> {
+fun AuthorizationCard(navController: NavController, showError: Boolean): List<String> {
 
     var email = ""
     var password = ""
@@ -134,6 +136,24 @@ fun AuthorizationCard(navController: NavController): List<String> {
         ) {
             password = AuthorizationElement("пароль", "Введите пароль", "password")
         }
+        if (showError) {
+
+            DefaultText(
+                text = "Неверные почта или пароль",
+                size = 15,
+                Color.Red,
+                modifier = Modifier
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        ClickableText(
+            text = AnnotatedString("Зарегистрироваться"),
+            onClick = { navController.navigate(Screen.RegScreen.withArgs()) },
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
     }
     return listOf(email, password)
 }
