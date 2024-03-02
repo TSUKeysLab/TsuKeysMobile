@@ -18,6 +18,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,6 +27,7 @@ import androidx.navigation.navArgument
 import com.example.tsukeysmobile.Screens.BookScreen
 import com.example.tsukeysmobile.Screens.CabScreen
 import com.example.tsukeysmobile.Screens.ProfileScreen
+import com.example.tsukeysmobile.Screens.RegistrationScreen
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.RequestsScreen
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
@@ -39,6 +41,8 @@ val requests : MutableList<Request> = mutableStateListOf(Request(UUID.randomUUID
         .offset(x = 20.dp)
         .padding(vertical = 50.dp), color = Color.Black, thickness = 6.dp)
 })
+var AUTHORIZE_TOKEN: String = ""
+
 class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,7 +95,7 @@ class MainActivity : ComponentActivity() {
     fun Navigation()
     {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
+        NavHost(navController = navController, startDestination = com.example.tsukeysmobile.Navigation.Screen.RegScreen.route)
         {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
             {
@@ -104,6 +108,10 @@ class MainActivity : ComponentActivity() {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.BookScreen.route)
             {
                 BookScreen(navController = navController)
+            }
+            composable(route = com.example.tsukeysmobile.Navigation.Screen.RegScreen.route)
+            {
+                RegistrationScreen(navController = navController)
             }
             composable(
                 route = com.example.tsukeysmobile.Navigation.Screen.CabScreen.route + "/{dateAndLes}",
