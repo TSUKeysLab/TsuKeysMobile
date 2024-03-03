@@ -3,6 +3,7 @@ package com.example.tsukeysmobile.Views
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideOutHorizontally
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -195,41 +197,28 @@ fun ShowInComing(
     }
 }
 
+var openKeysMenu by mutableStateOf(false)
+
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun KeysMenu()
 {
-    val openDialog = remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .wrapContentSize()
-            .background(color = Color.Black, shape = RoundedCornerShape(40))
-            .border(width = 5.dp, shape = RoundedCornerShape(40), color = Color.White)
-            .clickable { openDialog.value = !openDialog.value },
-        horizontalArrangement = Arrangement.Center
+    val KeysMenuAlpha by animateFloatAsState(
+        targetValue = if (openKeysMenu) 1f else 0f,
+        animationSpec = tween(durationMillis = 300)
     )
-    {
-        Image(modifier = Modifier
-            .size(40.dp)
-            .offset(x = 15.dp, y = 10.dp),
-            painter = painterResource(id = R.drawable.key),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
-        )
-        DefaultText(text = "ключи", size = 40, modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp), color = Color.White)
-    }
+
     Box(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth(0.9f)
+            .fillMaxHeight(0.7f)
             .padding(horizontal = 5.dp),
         contentAlignment = Alignment.Center
     )
     {
-
-        if (openDialog.value)
+        if (openKeysMenu)
         {
-            Box(modifier = Modifier
+            Box(modifier = Modifier.alpha(KeysMenuAlpha)
                 .background(color = gray, shape = RoundedCornerShape(10.dp))
                 .fillMaxWidth()
                 .fillMaxHeight(0.8f)
@@ -248,14 +237,14 @@ fun KeysMenu()
                         horizontalArrangement = Arrangement.SpaceBetween)
                     {
                         Box(modifier = Modifier
-                            .background(color = Color.Gray, shape = RoundedCornerShape(50))
+                            .background(color = darkGray, shape = RoundedCornerShape(50))
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
                             DefaultText(text = "?", size = 20, modifier = Modifier, color = Color.White)
                         }
                         Box(modifier = Modifier
-                            .clickable { openDialog.value = !openDialog.value }
-                            .background(color = Color.Gray)
+                            .clickable { openKeysMenu = !openKeysMenu }
+                            .background(color = darkGray)
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
                             DefaultText(text = "X", size = 20, modifier = Modifier, color = Color.White)

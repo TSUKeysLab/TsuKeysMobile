@@ -24,7 +24,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tsukeysmobile.Screens.blur
 import com.example.tsukeysmobile.Screens.requests
 import com.example.tsukeysmobile.Views.openRequestActionsMenu
 import com.example.tsukeysmobile.Views.request
@@ -130,7 +129,6 @@ fun RequestCard(
             {
                 detectTapGestures(
                     onLongPress = {
-                        blur.value = 25f
                         request.value = requests.find { it.id == id }!!
                         openRequestActionsMenu = true
                     }
