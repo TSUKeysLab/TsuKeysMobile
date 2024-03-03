@@ -1,5 +1,6 @@
 package com.example.tsukeysmobile.Requests.Interface
 
+import com.example.tsukeysmobile.Requests.KeyRequests.CreateRequestBody
 import com.example.tsukeysmobile.Requests.KeyRequests.KeyRequests
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
 import com.example.tsukeysmobile.Requests.Requests.RequestDataItem
@@ -42,8 +43,7 @@ interface RequestsInterface {
                          @Query ("request") requestId: String): Call<Void>
 
     @Headers("Content-Type: application/json")
-    @PUT("key/request")
+    @POST("key/request")
     fun createKeyRequest(@Header("Authorization") token: String,
-                         @Body keyRecipient: String,
-                         @Body classroomNumber: String): Call<Void>
+                         @Body body: CreateRequestBody): Call<Void>
 }
