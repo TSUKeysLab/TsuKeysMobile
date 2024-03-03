@@ -2,8 +2,12 @@ package com.example.tsukeysmobile
 
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -20,7 +24,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.tsukeysmobile.Screens.GlobalVariables.requests
+import com.example.tsukeysmobile.Screens.blur
+import com.example.tsukeysmobile.Screens.requests
+import com.example.tsukeysmobile.Views.openRequestActionsMenu
+import com.example.tsukeysmobile.Views.request
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.util.*
 
@@ -60,7 +67,9 @@ fun StatusPart(
     val color: Color
     if (status == "Pending") color = Color.Gray else if (status == "Approved") color = Color.Green else color = Color.Red
     Row(
-        modifier = Modifier.wrapContentSize().background(color = color, shape = RoundedCornerShape(50))
+        modifier = Modifier
+            .wrapContentSize()
+            .background(color = color, shape = RoundedCornerShape(50))
     )
     {
         DefaultText(text = status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
@@ -97,6 +106,7 @@ fun WeekDayPart(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -118,28 +128,13 @@ fun RequestCard(
             .offset { IntOffset(x = offsetX.toInt(), y = 0) }
             .pointerInput(Unit)
             {
-                detectDragGesturesAfterLongPress(
-                    onDragStart =
-                    {
-
-                    },
-                    onDragEnd =
-                    {
-                        if (offsetX > -400) offsetX = 0f
-                        else {
-                            val index = requests.indexOf(requests.find { it.id == id })
-                            println(index)
-                            requests[index].visibleState.targetState = false
-                        }
-                    },
-                    onDragCancel =
-                    {
+                detectTapGestures(
+                    onLongPress = {
+                        blur.value = 25f
+                        request.value = requests.find { it.id == id }!!
+                        openRequestActionsMenu = true
                     }
                 )
-                { change, dragAmount ->
-                    change.consume()
-                    if (dragAmount.x <= 0 || offsetX <= 0) offsetX += dragAmount.x
-                }
             },
         colors = CardDefaults.cardColors(
             containerColor = type,

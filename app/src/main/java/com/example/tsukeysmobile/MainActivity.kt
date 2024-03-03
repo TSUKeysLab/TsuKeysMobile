@@ -9,17 +9,14 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.tsukeysmobile.Screens.BookScreen
-import com.example.tsukeysmobile.Screens.CabScreen
-import com.example.tsukeysmobile.Screens.ProfileScreen
-import com.example.tsukeysmobile.Screens.RequestsScreen
+import com.example.tsukeysmobile.Screens.*
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -43,6 +40,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 )
                 {
+//                    BlurredBackground()
                     Navigation()
                 }
             }
