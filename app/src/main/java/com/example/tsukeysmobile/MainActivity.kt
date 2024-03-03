@@ -1,39 +1,36 @@
 package com.example.tsukeysmobile
 
+import android.os.Build
 import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.tsukeysmobile.Screens.ProfileScreen
-import com.example.tsukeysmobile.Screens.Request
-import com.example.tsukeysmobile.Screens.RequestsScreen
+import androidx.navigation.navArgument
+import com.example.tsukeysmobile.Screens.*
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
-import com.example.tsukeysmobile.ui.theme.requestRepeatable
-import com.example.tsukeysmobile.ui.theme.requestSingle
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
-val requests : MutableList<Request> = mutableStateListOf(Request(UUID.randomUUID()) {
-    Divider(modifier = Modifier
-        .fillMaxWidth(0.9f)
-        .offset(x = 20.dp)
-        .padding(vertical = 50.dp), color = Color.Black, thickness = 6.dp)
-})
+
+val retrofit = Retrofit.Builder()
+    .baseUrl("http://89.111.174.112:8181/")
+    .addConverterFactory(GsonConverterFactory.create())
+    .build()
+
+
 class MainActivity : ComponentActivity() {
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -43,50 +40,24 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 )
                 {
-                    requests.add(0, Request(UUID.randomUUID()) {
-                        RequestCard(
-                            id = UUID.randomUUID(),
-                            status = "Approved",
-                            date = "14.02",
-                            cab = "227",
-                            time = "18:25-20:00",
-                            type = requestSingle,
-                        )
-                    })
-                    requests.add(0, Request(UUID.randomUUID()) {
-                        RequestCard(
-                            id = UUID.randomUUID(),
-                            status = "Pending",
-                            date = "14.02",
-                            cab = "227",
-                            time = "18:25-20:00",
-                            type = requestSingle,
-                        )
-                    })
-                    requests.add(Request(UUID.randomUUID()) {
-                        RequestCard(
-                            id = UUID.randomUUID(),
-                            status = "",
-                            date = "вт",
-                            cab = "227",
-                            time = "18:25-20:00",
-                            type = requestRepeatable,
-                        )
-                    })
+//                    BlurredBackground()
                     Navigation()
                 }
             }
         }
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("UnrememberedMutableState")
     @Composable
-    fun Navigation() {
+    fun Navigation()
+    {
         val navController = rememberNavController()
         NavHost(navController = navController, startDestination = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
         {
             composable(route = com.example.tsukeysmobile.Navigation.Screen.RequestsScreen.route)
             {
-                RequestsScreen(navController = navController, requests = requests)
+                RequestsScreen(navController = navController)
             }
             composable(route = com.example.tsukeysmobile.Navigation.Screen.ProfileScreen.route)
             {
@@ -94,7 +65,20 @@ class MainActivity : ComponentActivity() {
             }
             composable(route = com.example.tsukeysmobile.Navigation.Screen.BookScreen.route)
             {
-                ProfileScreen(navController = navController)
+                BookScreen(navController = navController)
+            }
+            composable(
+                route = com.example.tsukeysmobile.Navigation.Screen.CabScreen.route + "/{dateAndLes}",
+                arguments = listOf(
+                    navArgument("dateAndLes") {
+                        type = NavType.StringType
+                        defaultValue = "Some Default"
+                        nullable = true
+                    },
+                )
+            ) { entry ->
+                val dateAndLes = entry.arguments?.getString("dateAndLes")
+                CabScreen(dateAndLes = dateAndLes!!, navController = navController)
             }
         }
     }

@@ -2,10 +2,10 @@ package com.example.tsukeysmobile
 
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.Toast
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -14,34 +14,34 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.tsukeysmobile.Screens.requests
+import com.example.tsukeysmobile.Views.openRequestActionsMenu
+import com.example.tsukeysmobile.Views.request
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
 import java.util.*
-import javax.net.ssl.SSLEngineResult.Status
-
 
 @Composable
 fun DefaultText(
+    textAlign: TextAlign = TextAlign.Center,
     text: String,
     size: Int,
     color: Color = Color.White,
     modifier: Modifier
 )
 {
-    Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = color, style = TextStyle(
+    Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), textAlign = textAlign,color = color, style = TextStyle(
+
             platformStyle = PlatformTextStyle(
                 includeFontPadding = false,
             ),
@@ -68,7 +68,9 @@ fun StatusPart(
     val color: Color
     if (status == "Pending") color = Color.Gray else if (status == "Approved") color = Color.Green else color = Color.Red
     Row(
-        modifier = Modifier.wrapContentSize().background(color = color, shape = RoundedCornerShape(50))
+        modifier = Modifier
+            .wrapContentSize()
+            .background(color = color, shape = RoundedCornerShape(50))
     )
     {
         DefaultText(text = status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
@@ -105,11 +107,12 @@ fun WeekDayPart(
 }
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RememberReturnType")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestCard(
-    id: UUID,
+    id: String,
     status: String,
     date: String,
     cab: String,
@@ -126,28 +129,15 @@ fun RequestCard(
             .offset { IntOffset(x = offsetX.toInt(), y = 0) }
             .pointerInput(Unit)
             {
-                detectDragGesturesAfterLongPress(
-                    onDragStart =
-                    {
-
-                    },
-                    onDragEnd =
-                    {
-                        if (offsetX > -400) offsetX = 0f
-                        else {
-                            val index = requests.indexOf(requests.find { it.id == id })
-                            println(index)
-                            requests[index].visibleState.targetState = false
+                detectTapGestures(
+                    onPress = {
+                        if (!openRequestActionsMenu)
+                        {
+                            request.value = requests.find { it.id == id }!!
+                            openRequestActionsMenu = true
                         }
-                    },
-                    onDragCancel =
-                    {
                     }
                 )
-                { change, dragAmount ->
-                    change.consume()
-                    if (dragAmount.x <= 0 || offsetX <= 0) offsetX += dragAmount.x
-                }
             },
         colors = CardDefaults.cardColors(
             containerColor = type,
@@ -168,7 +158,7 @@ fun RequestCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                if (type == requestRepeatable) WeekDayPart(date) else DatePart(date.split('.')[0], date.split('.')[1])
+                if (type == requestRepeatable) WeekDayPart(date) else DatePart(date.split('-')[2], date.split('-')[1])
             }
 
             Column(
@@ -187,7 +177,7 @@ fun RequestCard(
                 horizontalAlignment = Alignment.CenterHorizontally
             )
             {
-                TimePart(time.split('-')[0], time.split('-')[1])
+                TimePart(time.split('-')[0].slice(0..4), time.split('-')[1].slice(0..4))
             }
         }
     }

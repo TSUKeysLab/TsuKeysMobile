@@ -1,12 +1,17 @@
 package com.example.tsukeysmobile.Views
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -20,40 +25,76 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.RequestCard
+import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Screens.Request
+import com.example.tsukeysmobile.Screens.requestService
+import com.example.tsukeysmobile.Screens.requests
 import com.example.tsukeysmobile.ui.theme.*
+import kotlinx.coroutines.launch
+import retrofit2.awaitResponse
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun OutcomeRequestCard(
+    id: String,
     Sender: String,
     Cab: String,
     Till: String,
+    Status: String,
 )
 {
     Column(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
         .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
-        .padding(5.dp))
+        .padding(5.dp)
+        .pointerInput(Unit)
+        {
+            detectTapGestures(
+                onPress = {
+                    if (!openKeyOutRequestActionsMenu) {
+                        keyOutRequest.value = outcoming.find { it.id == id }!!
+                        openKeyOutRequestActionsMenu = true
+                        status.value = Status
+                    }
+                }
+            )
+        })
     {
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp))
+            .padding(5.dp),
+        horizontalArrangement = Arrangement.SpaceBetween)
         {
-            DefaultText(text = "You", size = 20, modifier = Modifier, color = Color.White)
-            Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Red, modifier = Modifier.padding(horizontal = 5.dp))
+            DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
+            Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Red, modifier = Modifier)
             Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
-                .size(30.dp)
-                .offset(y = -3.dp)
-                .padding(horizontal = 5.dp))
-            DefaultText(text = Sender, size = 20, modifier = Modifier, color = Color.White)
+                .size(20.dp)
+            )
+            DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
+
+            val color: Color
+            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(start = 20.dp)
+                    .background(color = color, shape = RoundedCornerShape(50))
+            )
+            {
+                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -65,43 +106,69 @@ fun OutcomeRequestCard(
                 .wrapContentSize()
                 .background(color = requestSingle, shape = RoundedCornerShape(50)))
             {
-                DefaultText(text = "кабинет$Cab", size = 20, modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
+                DefaultText(text = "кабинет $Cab", size = 20, modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
             }
             Box(modifier = Modifier
                 .wrapContentSize()
                 .background(color = requestRepeatable, shape = RoundedCornerShape(50)))
             {
-                DefaultText(text = "до $Till", size = 20,modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
+                DefaultText(text = "до ${Till.slice(0..4)}", size = 20,modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
             }
         }
 
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun IncomeRequestCard(
+    id: String,
     Sender: String,
     Cab: String,
     Till: String,
+    Status: String,
 )
 {
     Column(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
         .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
-        .padding(5.dp))
+        .padding(5.dp)
+        .pointerInput(Unit)
+        {
+            detectTapGestures(
+                onPress = {
+                    if (!openKeyInRequestActionsMenu) {
+                        keyInRequest.value = outcoming.find { it.id == id }!!
+                        openKeyInRequestActionsMenu = true
+                        status.value = Status
+                    }
+                }
+            )
+        })
     {
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp))
+            .padding(5.dp)
+        , horizontalArrangement = Arrangement.SpaceBetween)
         {
             Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
-                .size(30.dp)
-                .offset(y = -3.dp)
-                .padding(horizontal = 5.dp))
-            DefaultText(text = Sender, size = 20, modifier = Modifier, color = Color.White)
+                .size(20.dp))
+            DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
             Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Green, modifier = Modifier.padding(horizontal = 5.dp))
-            DefaultText(text = "You", size = 20, modifier = Modifier, color = Color.White)
+            DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
+
+            val color: Color
+            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+            Row(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(start = 20.dp)
+                    .background(color = color, shape = RoundedCornerShape(50))
+            )
+            {
+                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -113,13 +180,13 @@ fun IncomeRequestCard(
                 .wrapContentSize()
                 .background(color = requestSingle, shape = RoundedCornerShape(50)))
             {
-                DefaultText(text = "кабинет$Cab", size = 20, modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
+                DefaultText(text = "кабинет $Cab", size = 20, modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
             }
             Box(modifier = Modifier
                 .wrapContentSize()
                 .background(color = requestRepeatable, shape = RoundedCornerShape(50)))
             {
-                DefaultText(text = "до $Till", size = 20,modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
+                DefaultText(text = "до ${Till.slice(0..4)}", size = 20,modifier = Modifier.padding(horizontal = 5.dp), color = Color.White)
             }
         }
         
@@ -134,7 +201,8 @@ fun ShowOutComing(
 {
     Box(
         modifier = Modifier
-            .fillMaxSize().padding(bottom = 20.dp),
+            .fillMaxSize()
+            .padding(bottom = 20.dp),
         contentAlignment = Alignment.BottomCenter
     )
     {
@@ -195,106 +263,170 @@ fun ShowInComing(
     }
 }
 
+var openKeysMenu by mutableStateOf(false)
+var incoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+var outcoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+lateinit var context: Context
+
+var status: MutableState<String> = mutableStateOf("")
+
+@RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun KeysMenu()
 {
-    val openDialog = remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier
-            .wrapContentSize()
-            .background(color = Color.Black, shape = RoundedCornerShape(40))
-            .border(width = 5.dp, shape = RoundedCornerShape(40), color = Color.White)
-            .clickable { openDialog.value = !openDialog.value },
-        horizontalArrangement = Arrangement.Center
+    context = LocalContext.current
+    val KeysMenuAlpha by animateFloatAsState(
+        targetValue = if (openKeysMenu) 1f else 0f,
+        animationSpec = tween(durationMillis = 300)
     )
+
+    Box(modifier = Modifier
+        .fillMaxSize(),
+        contentAlignment = Alignment.Center)
     {
-        Image(modifier = Modifier
-            .size(40.dp)
-            .offset(x = 15.dp, y = 10.dp),
-            painter = painterResource(id = R.drawable.key),
-            contentDescription = null,
-            contentScale = ContentScale.Fit
+
+        val blurAmount by animateFloatAsState(
+            targetValue = if (openKeyInRequestActionsMenu || openKeyOutRequestActionsMenu) 25f else 0f,
+            animationSpec = tween(durationMillis = 300)
         )
-        DefaultText(text = "ключи", size = 40, modifier = Modifier.padding(vertical = 5.dp, horizontal = 20.dp), color = Color.White)
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 5.dp),
-        contentAlignment = Alignment.Center
-    )
-    {
 
-        if (openDialog.value)
+        Box(
+            modifier = Modifier.blur(blurAmount.dp)
+                .fillMaxWidth(0.9f)
+                .fillMaxHeight(0.7f)
+                .padding(horizontal = 5.dp),
+            contentAlignment = Alignment.Center
+        )
         {
-            Box(modifier = Modifier
-                .background(color = gray, shape = RoundedCornerShape(10.dp))
-                .fillMaxWidth()
-                .fillMaxHeight(0.8f)
-                .border(1.dp, Color.Black, shape = RoundedCornerShape(10.dp)))
-            {
-                Column(modifier = Modifier.fillMaxSize())
-                {
-                    Row(modifier = Modifier
-                        .background(
-                            color = Color.Black,
-                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
-                        )
+            if (openKeysMenu) {
+                Box(
+                    modifier = Modifier
+                        .alpha(KeysMenuAlpha)
+                        .background(color = gray, shape = RoundedCornerShape(10.dp))
                         .fillMaxWidth()
-                        .padding(10.dp)
-                        .wrapContentHeight(),
-                        horizontalArrangement = Arrangement.SpaceBetween)
+                        .fillMaxHeight(0.8f)
+                        .border(1.dp, Color.Black, shape = RoundedCornerShape(10.dp))
+                )
+                {
+                    Column(modifier = Modifier.fillMaxSize())
                     {
-                        Box(modifier = Modifier
-                            .background(color = Color.Gray, shape = RoundedCornerShape(50))
-                            .size(30.dp), contentAlignment = Alignment.Center)
+                        Row(
+                            modifier = Modifier
+                                .background(
+                                    color = Color.Black,
+                                    shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                                )
+                                .fillMaxWidth()
+                                .padding(10.dp)
+                                .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        )
                         {
-                            DefaultText(text = "?", size = 20, modifier = Modifier, color = Color.White)
-                        }
-                        Box(modifier = Modifier
-                            .clickable { openDialog.value = !openDialog.value }
-                            .background(color = Color.Gray)
-                            .size(30.dp), contentAlignment = Alignment.Center)
-                        {
-                            DefaultText(text = "X", size = 20, modifier = Modifier, color = Color.White)
-                        }
-                    }
-                    var tabIndex by remember { mutableStateOf(0) }
-
-                    val tabs = listOf("входящие", "исходящие")
-
-                    val incoming : MutableList<Request> = mutableStateListOf()
-                    incoming.add(Request(UUID.randomUUID(), {IncomeRequestCard(Sender = "Саня", Cab = "227", Till = "14:00")}))
-                    incoming.add(Request(UUID.randomUUID(), {IncomeRequestCard(Sender = "Артем", Cab = "226", Till = "16:20")}))
-
-                    val outcoming : MutableList<Request> = mutableStateListOf()
-                    outcoming.add(Request(UUID.randomUUID(), { OutcomeRequestCard(Sender = "Саня", Cab = "227", Till = "14:00") }))
-                    outcoming.add(Request(UUID.randomUUID(), { OutcomeRequestCard(Sender = "Артем", Cab = "226", Till = "16:20") }))
-
-                    Column(modifier = Modifier.fillMaxWidth())
-                    {
-                        TabRow(selectedTabIndex = tabIndex, backgroundColor = darkGray, contentColor = Color.White)
-                        {
-                            tabs.forEachIndexed{ index, title ->
-                                Tab(text = { Text(title) },
-                                    selected = tabIndex == index,
-                                    onClick = { tabIndex = index },
-                                    selectedContentColor = lightGray,
-                                    unselectedContentColor = Color.Gray,
-                                    modifier = Modifier.background(shape = RoundedCornerShape(bottomStart = 20.dp,bottomEnd = 20.dp), color = darkGray)
+                            Box(
+                                modifier = Modifier
+                                    .background(color = darkGray, shape = RoundedCornerShape(50))
+                                    .size(30.dp), contentAlignment = Alignment.Center
+                            )
+                            {
+                                DefaultText(
+                                    text = "?",
+                                    size = 20,
+                                    modifier = Modifier,
+                                    color = Color.White
+                                )
+                            }
+                            Box(modifier = Modifier
+                                .clickable { openKeysMenu = !openKeysMenu }
+                                .background(color = darkGray)
+                                .size(30.dp), contentAlignment = Alignment.Center)
+                            {
+                                DefaultText(
+                                    text = "X",
+                                    size = 20,
+                                    modifier = Modifier,
+                                    color = Color.White
                                 )
                             }
                         }
-                        when (tabIndex)
+                        var tabIndex by remember { mutableStateOf(0) }
+
+                        val tabs = listOf("входящие", "исходящие")
+
+                        val coroutineScope = rememberCoroutineScope()
+
+                        LaunchedEffect(Unit) {
+                            coroutineScope.launch {
+                                var response =
+                                    requestService.getKeyRequests(AUTHORIZE_TOKEN, "Recipient")
+                                        .awaitResponse().body()
+                                if (response != null) incoming = response.map {
+                                    Request(
+                                        id = it.requestId,
+                                        {
+                                            IncomeRequestCard(
+                                                id = it.requestId,
+                                                Sender = it.keyOwnerFullName,
+                                                Cab = it.classroomNumber,
+                                                Till = it.endOfRequest,
+                                                Status = it.status
+                                            )
+                                        })
+                                }.toMutableStateList()
+
+                                response = requestService.getKeyRequests(AUTHORIZE_TOKEN, "Owner")
+                                    .awaitResponse().body()
+                                if (response != null) outcoming = response.map {
+                                    Request(
+                                        id = it.requestId,
+                                        {
+                                            OutcomeRequestCard(
+                                                id = it.requestId,
+                                                Sender = it.keyRecipientFullName,
+                                                Cab = it.classroomNumber,
+                                                Till = it.endOfRequest,
+                                                Status = it.status
+                                            )
+                                        })
+                                }.toMutableStateList()
+                                println(outcoming.size)
+                            }
+                        }
+
+                        Column(modifier = Modifier.fillMaxWidth())
                         {
-                            0 -> ShowInComing(incoming)
-                            1 -> ShowOutComing(outcoming)
+                            TabRow(
+                                selectedTabIndex = tabIndex,
+                                backgroundColor = darkGray,
+                                contentColor = Color.White
+                            )
+                            {
+                                tabs.forEachIndexed { index, title ->
+                                    Tab(
+                                        text = { Text(title) },
+                                        selected = tabIndex == index,
+                                        onClick = { tabIndex = index },
+                                        selectedContentColor = lightGray,
+                                        unselectedContentColor = Color.Gray,
+                                        modifier = Modifier.background(
+                                            shape = RoundedCornerShape(
+                                                bottomStart = 20.dp,
+                                                bottomEnd = 20.dp
+                                            ), color = darkGray
+                                        )
+                                    )
+                                }
+                            }
+                            when (tabIndex) {
+                                0 -> ShowInComing(incoming)
+                                1 -> ShowOutComing(outcoming)
+                            }
                         }
                     }
                 }
             }
         }
+        KeyRequestIncomeActionsMenu(context = LocalContext.current)
+        KeyRequestOutcomeActionsMenu(context = LocalContext.current)
     }
 }
