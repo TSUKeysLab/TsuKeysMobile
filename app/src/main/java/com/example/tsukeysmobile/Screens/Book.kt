@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -32,19 +33,21 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.Views.BookCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 
 
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookScreen(navController: NavController) {
-
-
-
+    val req = RequestsFunctions()
+    LaunchedEffect(Unit) {
+        if (req.checkUserAuth() == 401 || req.checkUserAuth() == 500) {
+            navController.navigate(Screen.AuthScreen.withArgs())
+        }
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     )

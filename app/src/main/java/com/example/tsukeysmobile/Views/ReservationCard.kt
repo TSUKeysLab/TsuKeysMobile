@@ -46,7 +46,6 @@ fun ReservationCard(
 ) {
     var showDialog by remember { mutableStateOf(false) }
     var makeRequest by remember { mutableStateOf(false) }
-    var color by remember { mutableStateOf(false) }
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },

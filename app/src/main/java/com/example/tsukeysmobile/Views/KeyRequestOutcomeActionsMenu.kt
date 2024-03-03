@@ -18,8 +18,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
+import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
-import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.requestService
