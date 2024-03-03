@@ -141,7 +141,6 @@ fun RequestsScreen(navController: NavController)
                     Image(modifier = Modifier
                         .size(25.dp)
                         .clickable { navController.navigate(Screen.BookScreen.withArgs())
-                            requests = mutableStateListOf()
                         },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
                         contentDescription = null,
@@ -156,7 +155,6 @@ fun RequestsScreen(navController: NavController)
                         .size(25.dp)
                         .clickable {
                             navController.navigate(Screen.RequestsScreen.withArgs())
-                            requests = mutableStateListOf()
                         },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.requests),
                         contentDescription = null,
@@ -170,7 +168,6 @@ fun RequestsScreen(navController: NavController)
                     Image(modifier = Modifier
                         .size(25.dp)
                         .clickable { navController.navigate(Screen.ProfileScreen.withArgs())
-                            requests = mutableStateListOf()
                         },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profile),
                         contentDescription = null,

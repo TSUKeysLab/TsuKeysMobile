@@ -1,6 +1,8 @@
 package com.example.tsukeysmobile.Views
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
@@ -39,8 +41,14 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.PopupProperties
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
+import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Screens.Request
+import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.ui.theme.*
+import com.google.gson.Gson
+import kotlinx.coroutines.launch
+import retrofit2.awaitResponse
 import java.util.*
 import java.util.EnumSet.range
 import kotlin.math.exp
@@ -256,13 +264,31 @@ fun KeysMenuCreateKey()
                             enabled = false,
                             modifier = Modifier.clickable { expanded = true })
                     }
-                    Box(
+                    val coroutineScope = rememberCoroutineScope()
+
+                    Button(
+                        colors = ButtonDefaults.buttonColors(darkGray),
+                        shape = RoundedCornerShape(50.dp),
                         modifier = Modifier
                             .fillMaxWidth(0.8f)
                             .wrapContentHeight()
-                            .padding(vertical = 10.dp)
-                            .background(color = darkGray, shape = RoundedCornerShape(35)),
-                        contentAlignment = Alignment.Center
+                            .padding(vertical = 10.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, keyRecipient = message.value, classroomNumber = cab.value).awaitResponse()
+
+                                if (response.isSuccessful)
+                                {
+
+                                }
+                                else
+                                {
+                                    val errorResponse = Gson().fromJson(response.errorBody()?.string(), ErrorData::class.java)
+                                    Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                        }
                     )
                     {
                         DefaultText(text = "Передать ключ", size = 25, modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp))

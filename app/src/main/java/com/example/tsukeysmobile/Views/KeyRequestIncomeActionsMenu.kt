@@ -15,12 +15,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 
 import androidx.compose.ui.unit.dp
 import com.example.tsukeysmobile.DefaultText
-import com.example.tsukeysmobile.RequestCard
 import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Screens.Request
@@ -34,27 +32,26 @@ import retrofit2.awaitResponse
 import java.util.*
 
 
-var openRequestActionsMenu by mutableStateOf(false)
+var openKeyInRequestActionsMenu by mutableStateOf(false)
 
 @RequiresApi(Build.VERSION_CODES.O)
-var request: MutableState<Request> = mutableStateOf(Request(id = "") {
-    RequestCard(
+var keyInRequest: MutableState<Request> = mutableStateOf(Request(id = "") {
+    IncomeRequestCard(
         "",
         "",
         "",
         "",
-        "",
-        requestSingle
+        ""
     )
 })
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun RequestActionsMenu(context: Context)
+fun KeyRequestIncomeActionsMenu(context: Context)
 {
     val popupAlpha by animateFloatAsState(
-        targetValue = if (openRequestActionsMenu) 1f else 0f,
+        targetValue = if (openKeyInRequestActionsMenu) 1f else 0f,
         animationSpec = tween(durationMillis = 300)
     )
     Box(
@@ -63,7 +60,7 @@ fun RequestActionsMenu(context: Context)
         contentAlignment = Alignment.Center
     )
     {
-        if (openRequestActionsMenu)
+        if (openKeyInRequestActionsMenu)
         {
             Box(modifier = Modifier.alpha(popupAlpha)
                 .background(color = darkGray, shape = RoundedCornerShape(10.dp))
@@ -83,14 +80,14 @@ fun RequestActionsMenu(context: Context)
                         horizontalArrangement = Arrangement.SpaceBetween)
                     {
                         Box(modifier = Modifier
-                            .clickable { Toast.makeText(context, "Действия с заявкой на бронь кабинета", Toast.LENGTH_SHORT).show() }
+                            .clickable { Toast.makeText(context, "Действия с заявкой на получение ключа", Toast.LENGTH_SHORT).show() }
                             .background(color = darkGray, shape = RoundedCornerShape(50))
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
                             DefaultText(text = "?", size = 20, modifier = Modifier, color = Color.White)
                         }
                         Box(modifier = Modifier
-                            .clickable { openRequestActionsMenu = !openRequestActionsMenu }
+                            .clickable { openKeyInRequestActionsMenu = !openKeyInRequestActionsMenu }
                             .background(color = darkGray)
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
@@ -99,7 +96,7 @@ fun RequestActionsMenu(context: Context)
                     }
                     Box(modifier = Modifier.padding(10.dp))
                     {
-                        request.value.element()
+                        keyInRequest.value.element()
                     }
                     Row(modifier = Modifier
                         .fillMaxWidth()
@@ -112,18 +109,18 @@ fun RequestActionsMenu(context: Context)
                         val coroutineScope = rememberCoroutineScope()
 
                         Button(modifier = Modifier
-                            .border(width = 3.dp, color = Color.Black, shape = RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp))
+                            .border(width = 3.dp, color = Color.Black, shape = RoundedCornerShape(50.dp))
                             .weight(1f)
                             .wrapContentSize(), onClick = {
                                 coroutineScope.launch {
 
-                                    val response = requestService.deleteRequest(AUTHORIZE_TOKEN, request.value.id).awaitResponse()
+                                    val response = requestService.deleteKeyRequest(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
 
                                     if (response.isSuccessful)
                                     {
-                                        val index = requests.indexOf(request.value)
-                                        requests[index].visibleState.targetState = false
-                                        openRequestActionsMenu = false
+                                        val index = incoming.indexOf(keyInRequest.value)
+                                        incoming[index].visibleState.targetState = false
+                                        openKeyInRequestActionsMenu = false
                                     }
                                     else
                                     {
@@ -132,7 +129,7 @@ fun RequestActionsMenu(context: Context)
                                     }
                                 }
                             },
-                            shape = RoundedCornerShape(topStart = 50.dp, bottomStart = 50.dp),
+                            shape = RoundedCornerShape(50.dp),
                             colors = ButtonDefaults.buttonColors(Color(0xFFEF5350)))
                         {
                             DefaultText(
@@ -141,18 +138,18 @@ fun RequestActionsMenu(context: Context)
                                 modifier = Modifier.fillMaxWidth(),
                             )
                         }
-                        Button(modifier = Modifier
-                            .border(width = 3.dp, color = Color.Black, shape = RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp))
-                            .weight(1f)
-                            .wrapContentSize(), onClick = {
+                        if (status.value == "Pending")
+                        {
+                            Button(modifier = Modifier
+                                .border(width = 3.dp, color = Color.Black, shape = RoundedCornerShape(50.dp))
+                                .weight(1f)
+                                .wrapContentSize(), onClick = {
                                 coroutineScope.launch {
-                                    val response = requestService.confirmKeyRequest(AUTHORIZE_TOKEN, request.value.id).awaitResponse()
+                                    val response = requestService.acceptKeyRequest(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
 
                                     if (response.isSuccessful)
                                     {
-                                        val index = requests.indexOf(request.value)
-                                        requests[index].visibleState.targetState = false
-                                        openRequestActionsMenu = false
+                                        status.value = "Approved"
                                     }
                                     else
                                     {
@@ -161,14 +158,47 @@ fun RequestActionsMenu(context: Context)
                                     }
                                 }
                             },
-                            shape = RoundedCornerShape(topEnd = 50.dp, bottomEnd = 50.dp),
-                            colors = ButtonDefaults.buttonColors(darkGreen))
+                                shape = RoundedCornerShape(50.dp),
+                                colors = ButtonDefaults.buttonColors(darkGreen))
+                            {
+                                DefaultText(
+                                    text = "Принять\nзаявку",
+                                    size = 20,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
+                        }
+                        else if (status.value == "Approved")
                         {
-                            DefaultText(
-                                text = "Получил\nключ",
-                                size = 20,
-                                modifier = Modifier.fillMaxWidth(),
-                            )
+                            Button(modifier = Modifier
+                                .border(width = 3.dp, color = Color.Black, shape = RoundedCornerShape(50.dp))
+                                .weight(1f)
+                                .wrapContentSize(), onClick = {
+                                coroutineScope.launch {
+                                    val response = requestService.confirmKeyRequestFromPeople(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
+
+                                    if (response.isSuccessful)
+                                    {
+                                        val index = incoming.indexOf(keyInRequest.value)
+                                        incoming[index].visibleState.targetState = false
+                                        openKeyInRequestActionsMenu = false
+                                    }
+                                    else
+                                    {
+                                        val errorResponse = Gson().fromJson(response.errorBody()?.string(), ErrorData::class.java)
+                                        Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT).show()
+                                    }
+                                }
+                            },
+                                shape = RoundedCornerShape(50.dp),
+                                colors = ButtonDefaults.buttonColors(darkGreen))
+                            {
+                                DefaultText(
+                                    text = "Получил\nключ",
+                                    size = 20,
+                                    modifier = Modifier.fillMaxWidth(),
+                                )
+                            }
                         }
                     }
                 }

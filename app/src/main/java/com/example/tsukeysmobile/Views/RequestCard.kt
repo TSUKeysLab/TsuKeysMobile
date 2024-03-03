@@ -20,6 +20,7 @@ import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -32,13 +33,14 @@ import java.util.*
 
 @Composable
 fun DefaultText(
+    textAlign: TextAlign = TextAlign.Center,
     text: String,
     size: Int,
     color: Color = Color.White,
     modifier: Modifier
 )
 {
-    Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), color = color, style = TextStyle(
+    Text(modifier = modifier,overflow = TextOverflow.Visible, text = text, fontSize = size.sp, fontFamily = FontFamily(Font(R.font.interblack)), textAlign = textAlign,color = color, style = TextStyle(
 
             platformStyle = PlatformTextStyle(
                 includeFontPadding = false,
@@ -128,9 +130,12 @@ fun RequestCard(
             .pointerInput(Unit)
             {
                 detectTapGestures(
-                    onLongPress = {
-                        request.value = requests.find { it.id == id }!!
-                        openRequestActionsMenu = true
+                    onPress = {
+                        if (!openRequestActionsMenu)
+                        {
+                            request.value = requests.find { it.id == id }!!
+                            openRequestActionsMenu = true
+                        }
                     }
                 )
             },
