@@ -1,12 +1,12 @@
 package com.example.tsukeysmobile.Screens
+import android.annotation.SuppressLint
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -16,16 +16,33 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
+import com.example.tsukeysmobile.Requests.Interface.ProfileInterface
+import com.example.tsukeysmobile.Requests.Profile.ProfileData
 import com.example.tsukeysmobile.Views.KeysMenu
+import com.example.tsukeysmobile.retrofit
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
 import com.example.tsukeysmobile.ui.theme.darkGreen
 import com.example.tsukeysmobile.ui.theme.profileCol
+import kotlinx.coroutines.launch
+import retrofit2.awaitResponse
 import java.util.*
+
+val profileService: ProfileInterface = retrofit.create(ProfileInterface::class.java)
+var profile:MutableState<ProfileData> = mutableStateOf(ProfileData())
 
 @Composable
 fun ProfileScreen(navController: NavController)
 {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            val response = profileService.getProfile(AUTHORIZE_TOKEN).awaitResponse().body()
+            if (response!=null) profile.value = response
+        }
+    }
     Column(
         modifier = Modifier.fillMaxSize()
     )
@@ -71,7 +88,7 @@ fun ProfileScreen(navController: NavController)
                     verticalArrangement = Arrangement.Center
                 )
                 {
-                    DefaultText(text = "Иван Иванов", size = 40, modifier = Modifier.padding(10.dp))
+                    DefaultText(text = profile.value.fullname, size = 40, modifier = Modifier.padding(10.dp))
                     Row(
                         horizontalArrangement = Arrangement.Center
                     )
@@ -88,7 +105,7 @@ fun ProfileScreen(navController: NavController)
                                 )
                         )
                         {
-                            DefaultText(text = "Студент", size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
+                            DefaultText(text = profile.value.role, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
                         }
                         Box(
                             modifier = Modifier
