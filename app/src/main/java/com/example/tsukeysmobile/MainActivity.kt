@@ -16,7 +16,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.tsukeysmobile.Requests.Profile.ProfileData
 import com.example.tsukeysmobile.Screens.*
 import com.example.tsukeysmobile.ui.theme.TsuKeysMobileTheme
 import retrofit2.Retrofit
@@ -41,6 +40,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 )
                 {
+//                    BlurredBackground()
                     Navigation()
                 }
             }

@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.*
 import androidx.compose.animation.core.MutableTransitionState
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -16,10 +18,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
@@ -28,6 +33,7 @@ import com.example.tsukeysmobile.RequestCard
 import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Interface.RequestsInterface
 import com.example.tsukeysmobile.Views.RequestActionsMenu
+import com.example.tsukeysmobile.Views.openRequestActionsMenu
 import com.example.tsukeysmobile.retrofit
 
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
@@ -47,6 +53,7 @@ data class Request(
 
 var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
 val requestService: RequestsInterface = retrofit.create(RequestsInterface::class.java)
+var blur: MutableState<Float> = mutableStateOf(0f)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState",
@@ -56,10 +63,17 @@ val requestService: RequestsInterface = retrofit.create(RequestsInterface::class
 @Composable
 fun RequestsScreen(navController: NavController)
 {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center)
+    Box(modifier = Modifier
+        .fillMaxSize(),
+        contentAlignment = Alignment.Center)
     {
+        var blurAmount by remember { mutableStateOf(0f) }
+        blurAmount = animateFloatAsState(
+            targetValue = if (openRequestActionsMenu) 25f else 0f,
+            animationSpec = tween(durationMillis = 300)
+        ).value
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize().blur(blurAmount.dp)
         )
         {
             Row(
@@ -100,13 +114,7 @@ fun RequestsScreen(navController: NavController)
                 items(items = requests, key = { it.id })
                 { request ->
                     if (!request.visibleState.currentState && !request.visibleState.targetState) {
-
-                        LaunchedEffect(Unit) {
-                            coroutineScope.launch {
-                                val response = requestService.deleteRequest(AUTHORIZE_TOKEN,request.id).awaitResponse().body()
-                                requests.remove(request)
-                            }
-                        }
+                        requests.remove(request)
                     }
                     AnimatedVisibility(
                         modifier = Modifier
@@ -168,6 +176,6 @@ fun RequestsScreen(navController: NavController)
                 }
             }
         }
-        RequestActionsMenu()
+        RequestActionsMenu(LocalContext.current)
     }
 }
