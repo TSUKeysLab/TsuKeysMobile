@@ -3,6 +3,7 @@ package com.example.tsukeysmobile.Views
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -325,6 +326,7 @@ fun KeysMenu()
                         {
                             Box(
                                 modifier = Modifier
+                                    .clickable { Toast.makeText(context, "Заявки на передачу ключей", Toast.LENGTH_SHORT).show() }
                                     .background(color = darkGray, shape = RoundedCornerShape(50))
                                     .size(30.dp), contentAlignment = Alignment.Center
                             )

@@ -43,6 +43,7 @@ import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
 import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Error.ErrorData
+import com.example.tsukeysmobile.Requests.KeyRequests.CreateRequestBody
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.ui.theme.*
@@ -191,6 +192,7 @@ fun KeysMenuCreateKey()
                     {
                         Box(
                             modifier = Modifier
+                                .clickable { Toast.makeText(context, "Создание заявки на передачу ключа", Toast.LENGTH_SHORT).show() }
                                 .background(color = darkGray, shape = RoundedCornerShape(50))
                                 .size(30.dp), contentAlignment = Alignment.Center
                         )
@@ -217,7 +219,7 @@ fun KeysMenuCreateKey()
                     }
                     DefaultText(text = "кому:", size = 20, modifier = Modifier, color = Color.White)
                     val message = remember{mutableStateOf("")}
-                    TextFieldSample(modifier = Modifier, onValueChange = {message.value = it}, placeholder = "введите id пользователя")
+                    TextFieldSample(modifier = Modifier, onValueChange = {message.value = it}, placeholder = "введите email пользователя")
 
                     DefaultText(text = "ключ:", size = 20, modifier = Modifier, color = Color.White)
                     var expanded by remember { mutableStateOf(false) }
@@ -275,7 +277,7 @@ fun KeysMenuCreateKey()
                             .padding(vertical = 10.dp),
                         onClick = {
                             coroutineScope.launch {
-                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, keyRecipient = message.value, classroomNumber = cab.value).awaitResponse()
+                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, body = CreateRequestBody(keyRecipient = message.value, classroomNumber = cab.value)).awaitResponse()
 
                                 if (response.isSuccessful)
                                 {
@@ -291,7 +293,7 @@ fun KeysMenuCreateKey()
                         }
                     )
                     {
-                        DefaultText(text = "Передать ключ", size = 25, modifier = Modifier.padding(vertical = 10.dp, horizontal = 20.dp))
+                        DefaultText(text = "Передать ключ", size = 25, modifier = Modifier.padding(horizontal = 20.dp))
                     }
                 }
             }
