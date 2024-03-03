@@ -24,7 +24,6 @@ import com.example.tsukeysmobile.RequestCard
 import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Screens.Request
-import com.example.tsukeysmobile.Screens.blur
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.Screens.requests
 import com.example.tsukeysmobile.ui.theme.*
@@ -84,15 +83,14 @@ fun RequestActionsMenu(context: Context)
                         horizontalArrangement = Arrangement.SpaceBetween)
                     {
                         Box(modifier = Modifier
-                            .background(color = Color.Gray, shape = RoundedCornerShape(50))
+                            .background(color = darkGray, shape = RoundedCornerShape(50))
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
                             DefaultText(text = "?", size = 20, modifier = Modifier, color = Color.White)
                         }
                         Box(modifier = Modifier
-                            .clickable { openRequestActionsMenu = !openRequestActionsMenu
-                                blur.value = 0f}
-                            .background(color = Color.Gray)
+                            .clickable { openRequestActionsMenu = !openRequestActionsMenu }
+                            .background(color = darkGray)
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
                             DefaultText(text = "X", size = 20, modifier = Modifier, color = Color.White)

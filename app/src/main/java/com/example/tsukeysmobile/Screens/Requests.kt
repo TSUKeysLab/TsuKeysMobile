@@ -53,7 +53,6 @@ data class Request(
 
 var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
 val requestService: RequestsInterface = retrofit.create(RequestsInterface::class.java)
-var blur: MutableState<Float> = mutableStateOf(0f)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState",
@@ -67,11 +66,12 @@ fun RequestsScreen(navController: NavController)
         .fillMaxSize(),
         contentAlignment = Alignment.Center)
     {
-        var blurAmount by remember { mutableStateOf(0f) }
-        blurAmount = animateFloatAsState(
+
+        val blurAmount by animateFloatAsState(
             targetValue = if (openRequestActionsMenu) 25f else 0f,
             animationSpec = tween(durationMillis = 300)
-        ).value
+        )
+
         Column(
             modifier = Modifier.fillMaxSize().blur(blurAmount.dp)
         )
@@ -107,7 +107,6 @@ fun RequestsScreen(navController: NavController)
                         )
                     )
                     .padding(vertical = 30.dp, horizontal = 20.dp),
-
                 )
             {
 
@@ -141,7 +140,9 @@ fun RequestsScreen(navController: NavController)
                 {
                     Image(modifier = Modifier
                         .size(25.dp)
-                        .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
+                        .clickable { navController.navigate(Screen.BookScreen.withArgs())
+                            requests = mutableStateListOf()
+                        },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
@@ -155,6 +156,7 @@ fun RequestsScreen(navController: NavController)
                         .size(25.dp)
                         .clickable {
                             navController.navigate(Screen.RequestsScreen.withArgs())
+                            requests = mutableStateListOf()
                         },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.requests),
                         contentDescription = null,
@@ -167,7 +169,9 @@ fun RequestsScreen(navController: NavController)
                 {
                     Image(modifier = Modifier
                         .size(25.dp)
-                        .clickable { navController.navigate(Screen.ProfileScreen.withArgs()) },
+                        .clickable { navController.navigate(Screen.ProfileScreen.withArgs())
+                            requests = mutableStateListOf()
+                        },
                         painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profile),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
