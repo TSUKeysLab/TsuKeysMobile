@@ -12,7 +12,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
-const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJuYmYiOjE3MDkzOTUyNzcsImV4cCI6MTcwOTM5NjE3NywiaWF0IjoxNzA5Mzk1Mjc3LCJpc3MiOiJKV1RUb2tlbiIsImF1ZCI6Ikh1bWFuIn0.h1fDwzZjekdiLjAKajN6nfw-_QkO1gjrfzo6sy3ghZw"
+const val AUTHORIZE_TOKEN = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InVzZXJAZXhhbXBsZS5jb20iLCJuYmYiOjE3MDk0MDUzNDcsImV4cCI6MTcwOTQwNjI0NywiaWF0IjoxNzA5NDA1MzQ3LCJpc3MiOiJKV1RUb2tlbiIsImF1ZCI6Ikh1bWFuIn0.qgvjPeGajl2le6JU0eFRWIoTbkeI1MtQiRmnl07Samg"
 const val BASE_URL = "http://89.111.174.112:8181/"
 private val retrofit: Retrofit = Retrofit.Builder()
     .addConverterFactory(GsonConverterFactory.create())
