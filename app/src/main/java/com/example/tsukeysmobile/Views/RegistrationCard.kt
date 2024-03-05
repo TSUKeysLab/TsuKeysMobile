@@ -79,6 +79,7 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
         var date = remember { mutableStateOf("") }
         val datePickerDialog = DatePickerDialog(
             LocalContext.current,
+            R.style.DatePicker1,
             { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
 
                 val inputFormat = SimpleDateFormat("yyyy-M-d", Locale.getDefault())

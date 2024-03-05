@@ -2,4 +2,8 @@
 <resources>
 
     <style name="Theme.TsuKeysMobile" parent="android:Theme.Material.Light.NoActionBar" />
+    
+    <style name="DatePicker1" parent="Theme.AppCompat.Light.Dialog">
+        <item name="colorAccent">@android:color/black</item>
+    </style>
 </resources>
