@@ -3,25 +3,34 @@ package com.example.tsukeysmobile.Views
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +44,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
@@ -58,6 +68,10 @@ fun ChangeTransportedParams(
 
         LocalDate.now().plusDays(2).toString() + " - " + selectedItemLes
 
+    } else if (text == "Сегодня") {
+
+        LocalDate.now().plusDays(0).toString() + " - " + selectedItemLes
+
     } else {
 
         selectedItem + " - " + selectedItemLes
@@ -66,6 +80,42 @@ fun ChangeTransportedParams(
     return returnedParam
 }
 
+@Composable
+fun errrorOfChoise(text: String): TextFieldColors {
+    if (text.isNotEmpty()) {
+        return OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Black,
+            unfocusedContainerColor = Color.Black,
+            disabledContainerColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            disabledTextColor = Color.White,
+            disabledBorderColor = Color.White,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = Color.White,
+            disabledLabelColor = Color.White,
+            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    } else {
+        return OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color.Black,
+            unfocusedContainerColor = Color.Black,
+            disabledContainerColor = Color.Black,
+            focusedLabelColor = Color.Black,
+            disabledTextColor = Color.White,
+            disabledBorderColor = Color.Red,
+            disabledLeadingIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledTrailingIconColor = Color.White,
+            disabledLabelColor = Color.White,
+            disabledPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledSupportingTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledPrefixColor = MaterialTheme.colorScheme.onSurfaceVariant,
+            disabledSuffixColor = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
 
 @Composable
 fun DropDownText(
@@ -81,7 +131,14 @@ fun DropDownText(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BookCard(navController: NavController) {
-    val list = listOf("1 Пара - 8:45-10:20", "2 Пара - 10:35-12:10", "3 Пара - 12:25-14:00", "4 Пара - 14:45-16:20", "5 Пара - 16:35-18:10", "6 Пара - 18:25-20:00")
+    val list = listOf(
+        "1 Пара - 8:45-10:20",
+        "2 Пара - 10:35-12:10",
+        "3 Пара - 12:25-14:00",
+        "4 Пара - 14:45-16:20",
+        "5 Пара - 16:35-18:10",
+        "6 Пара - 18:25-20:00"
+    )
     val currentDate = LocalDate.now()
     val dateList = (1 until 9).map { currentDate.plusDays(it.toLong()) }
     val formattedDateList = dateList.mapIndexed { index, date ->
@@ -99,7 +156,7 @@ fun BookCard(navController: NavController) {
     var selectedItem by remember { mutableStateOf("") }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (expanded) {
-        Icons.Filled.KeyboardArrowUp
+        Icons.Filled.KeyboardArrowDown
     } else {
         Icons.Filled.KeyboardArrowUp
     }
@@ -107,7 +164,7 @@ fun BookCard(navController: NavController) {
     var selectedItemLes by remember { mutableStateOf("") }
     var textFieldSizeLes by remember { mutableStateOf(Size.Zero) }
     val iconLes = if (expandedLes) {
-        Icons.Filled.KeyboardArrowUp
+        Icons.Filled.KeyboardArrowDown
     } else {
         Icons.Filled.KeyboardArrowUp
     }
@@ -128,7 +185,9 @@ fun BookCard(navController: NavController) {
                 modifier = Modifier
                     .fillMaxWidth(0.3f)
                     .fillMaxHeight(0.1f)
-                    .padding(start = 12.dp, top = 12.dp, bottom = 12.dp),
+                    .padding(start = 8.dp, top = 12.dp, bottom = 5.dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             )
             {
@@ -141,27 +200,48 @@ fun BookCard(navController: NavController) {
                     value = selectedItem,
                     onValueChange = { selectedItem = it },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(0.85f)
                         .onGloballyPositioned { coordinates ->
                             textFieldSize = coordinates.size.toSize()
                         },
-                    label = { Text(text = "Выберите дату") },
+                    textStyle = TextStyle(color = Color.White),
+                    shape = RoundedCornerShape(16.dp),
+                    label = {
+                        Text(
+                            text = "Выберите дату",
+                            color = if (expanded == true) {
+                                if (selectedItem != "") {
+                                    Color.Black
+                                } else {
+                                    Color.White
+                                }
+                            } else {
+                                if (selectedItem != "") {
+                                    Color.Black
+                                } else {
+                                    Color.White
+                                }
+                            }
+                        )
+                    },
                     trailingIcon = {
                         Icon(icon, "", Modifier.clickable() { expanded = !expanded })
                     },
                     enabled = false,
+                    colors = errrorOfChoise(selectedItem)
                 )
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
                     modifier = androidx.compose.ui.Modifier
                         .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                        .background(Color.Black)
                 )
                 {
                     formattedDateList.forEach { label ->
                         DropdownMenuItem(
                             text = {
-                                Text(text = label)
+                                Text(text = label, color = Color.White)
                             }, onClick = {
                                 selectedItem = label
                                 expanded = false
@@ -172,13 +252,15 @@ fun BookCard(navController: NavController) {
         }
         Row(
             modifier = Modifier.offset(y = (-100.dp)),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.3f)
                     .fillMaxHeight(0.1f)
-                    .padding(start = 12.dp, top = 12.dp, bottom = 12.dp),
+                    .padding(start = 6.dp, top = 6.dp, bottom = (2.5).dp)
+                    .background(Color.White, shape = RoundedCornerShape(8.dp))
+                    .border(width = 2.dp, color = Color.Black, shape = RoundedCornerShape(8.dp)),
                 contentAlignment = Alignment.Center
             )
             {
@@ -190,28 +272,50 @@ fun BookCard(navController: NavController) {
                     value = selectedItemLes,
                     onValueChange = { selectedItemLes = it },
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth(0.85f)
                         .onGloballyPositioned { coordinates ->
                             textFieldSizeLes = coordinates.size.toSize()
                         },
-                    label = { Text(text = "Выберите пару") },
+                    shape = RoundedCornerShape(16.dp),
+                    textStyle = TextStyle(color = Color.White),
+                    label = {
+                        Text(
+                            text = "Выберите пару",
+                            color = if (expanded == true) {
+                                if (selectedItemLes != "") {
+                                    Color.Black
+                                } else {
+                                    Color.White
+                                }
+                            } else {
+                                if (selectedItemLes != "") {
+                                    Color.Black
+                                } else {
+                                    Color.White
+                                }
+                            }
+                        )
+                    },
+
                     trailingIcon = {
                         Icon(iconLes, "", Modifier.clickable() { expandedLes = !expandedLes })
                     },
                     enabled = false,
+                    colors = errrorOfChoise(selectedItemLes)
 
-                    )
+                )
                 DropdownMenu(
                     expanded = expandedLes,
                     onDismissRequest = { expandedLes = false },
                     modifier = androidx.compose.ui.Modifier
                         .width(with(LocalDensity.current) { textFieldSizeLes.width.toDp() })
+                        .background(Color.Black)
                 )
                 {
                     list.forEach { label ->
                         DropdownMenuItem(
                             text = {
-                                Text(text = label)
+                                Text(text = label, color = Color.White)
                             }, onClick = {
                                 selectedItemLes = label
                                 expandedLes = false
@@ -220,7 +324,9 @@ fun BookCard(navController: NavController) {
                 }
             }
         }
-
+        Divider(modifier = Modifier
+            .fillMaxWidth(0.9f)
+            .absoluteOffset(y = (-100).dp), color = Color.Black, thickness = 4.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
@@ -230,17 +336,39 @@ fun BookCard(navController: NavController) {
                         if (selectedItem == "Завтра") {
                             navController.navigate(
                                 Screen.CabScreen.withArgs(
-                                    ChangeTransportedParams("Завтра", selectedItem, selectedItemLes )
+                                    ChangeTransportedParams("Завтра", selectedItem, selectedItemLes)
                                 )
                             )
                         } else if (selectedItem == "Послезавтра") {
                             navController.navigate(
                                 Screen.CabScreen.withArgs(
-                                    ChangeTransportedParams("Послезавтра", selectedItem, selectedItemLes )
+                                    ChangeTransportedParams(
+                                        "Послезавтра",
+                                        selectedItem,
+                                        selectedItemLes
+                                    )
+                                )
+                            )
+                        } else if (selectedItem == "Сегодня") {
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams(
+                                        "Сегодня",
+                                        selectedItem,
+                                        selectedItemLes
+                                    )
                                 )
                             )
                         } else {
-                            navController.navigate(Screen.CabScreen.withArgs(ChangeTransportedParams(null, selectedItem, selectedItemLes)))
+                            navController.navigate(
+                                Screen.CabScreen.withArgs(
+                                    ChangeTransportedParams(
+                                        null,
+                                        selectedItem,
+                                        selectedItemLes
+                                    )
+                                )
+                            )
                         }
                     } else {
                         showError = true
