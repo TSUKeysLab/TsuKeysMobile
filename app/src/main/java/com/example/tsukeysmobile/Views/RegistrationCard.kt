@@ -285,7 +285,7 @@ fun error(type: String, text: String): TextFieldColors {
             )
         }
     } else {
-        if (text.isNotEmpty() && text[0].isUpperCase()) {
+        if (text.isNotEmpty()) {
             return OutlinedTextFieldDefaults.colors(
                 focusedContainerColor = Color.White,
                 unfocusedContainerColor = Color.White,
