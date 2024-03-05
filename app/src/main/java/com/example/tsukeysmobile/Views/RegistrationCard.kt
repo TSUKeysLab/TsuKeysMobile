@@ -12,6 +12,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,11 +20,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -44,7 +47,9 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -52,8 +57,11 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
+import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -324,9 +332,10 @@ fun RegisterElement(topLabel: String, text: String, type: String): String {
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview
 @Composable
-fun RegistrationCard(): List<String> {
+fun RegistrationCard(
+    navController: NavController
+): List<String> {
     var name = ""
     var surname = ""
     var bd = ""
@@ -334,21 +343,39 @@ fun RegistrationCard(): List<String> {
     var email = ""
     var password = ""
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Black, RoundedCornerShape(16.dp)),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    )
-    {
-        name = RegisterElement("имя", "Введите имя", "name")
-        surname = RegisterElement("фамилия", "Введите фамилию", "surname")
-        bd = RegisterElement("дата рождения", "Выберите дату рождения", "Date")
-        gender = RegisterElement("пол", "Выберите пол", "Gender")
-        email = RegisterElement("email", "Введите почту", "email")
-        password = RegisterElement("пароль", "Введите пароль", "password")
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Black, RoundedCornerShape(16.dp)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        )
+        {
+            name = RegisterElement("имя", "Введите имя", "name")
+            surname = RegisterElement("фамилия", "Введите фамилию", "surname")
+            bd = RegisterElement("дата рождения", "Выберите дату рождения", "Date")
+            gender = RegisterElement("пол", "Выберите пол", "Gender")
+            email = RegisterElement("email", "Введите почту", "email")
+            password = RegisterElement("пароль", "Введите пароль", "password")
+
+
+
+        }
+        Spacer(modifier = Modifier.height(12.dp))
+        ClickableText(
+            text = AnnotatedString("Войти"),
+            onClick = { navController.navigate(Screen.AuthScreen.withArgs()) },
+            style = TextStyle(
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold
+            )
+        )
+        Spacer(modifier = Modifier.height(3.dp))
+        Divider(modifier = Modifier
+            .fillMaxWidth(0.2f), color = Color.Black, thickness = 4.dp)
 
     }
+
     return listOf(name, surname, bd, gender, email, password)
 }
