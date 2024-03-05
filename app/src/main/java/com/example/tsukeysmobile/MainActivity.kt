@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity() {
                 {
 //                    BlurredBackground()
                     Navigation()
+                    println(AUTHORIZE_TOKEN)
                 }
             }
         }

@@ -146,7 +146,6 @@ fun KeyRequestIncomeActionsMenu(context: Context)
                                 .wrapContentSize(), onClick = {
                                 coroutineScope.launch {
                                     val response = requestService.acceptKeyRequest(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
-
                                     if (response.isSuccessful)
                                     {
                                         status.value = "Approved"
