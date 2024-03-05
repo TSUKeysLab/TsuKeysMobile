@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
@@ -37,8 +38,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
@@ -94,7 +99,7 @@ fun RegistrationScreen(navController: NavController) {
                 .padding(horizontal = 20.dp),
         )
         {
-            elements = RegistrationCard()
+            elements = RegistrationCard(navController)
             if (ready == true) {
                 val req = RequestsFunctions()
                 LaunchedEffect(Unit) {
@@ -112,6 +117,7 @@ fun RegistrationScreen(navController: NavController) {
                     ready = false
                 }
             }
+
         }
         Row(
             modifier = Modifier
