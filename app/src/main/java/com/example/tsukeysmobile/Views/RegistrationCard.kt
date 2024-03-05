@@ -54,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import com.example.tsukeysmobile.DefaultText
+import com.example.tsukeysmobile.R
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
