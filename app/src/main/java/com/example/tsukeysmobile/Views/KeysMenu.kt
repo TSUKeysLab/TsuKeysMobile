@@ -139,7 +139,7 @@ fun IncomeRequestCard(
             detectTapGestures(
                 onPress = {
                     if (!openKeyInRequestActionsMenu) {
-                        keyInRequest.value = outcoming.find { it.id == id }!!
+                        keyInRequest.value = incoming.find { it.id == id }!!
                         openKeyInRequestActionsMenu = true
                         status.value = Status
                     }
