@@ -123,46 +123,40 @@ fun ProfileScreen(navController: NavController)
                         verticalArrangement = Arrangement.Center
                     )
                     {
-                        Column(modifier = Modifier.wrapContentSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        DefaultText(text = profile.value.fullname, size = 40, modifier = Modifier.offset(y = -10.dp))
+                        Box(
+                            modifier = Modifier.offset(y = -10.dp)
+                                .padding(top = 5.dp)
+                                .wrapContentSize()
+                                .background(color = Color.White, shape = RoundedCornerShape(50))
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
                         )
                         {
-                            DefaultText(text = profile.value.fullname, size = 40, modifier = Modifier)
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .wrapContentSize()
-                                    .background(color = Color.White, shape = RoundedCornerShape(50))
-                                    .border(
-                                        width = 3.dp,
-                                        shape = RoundedCornerShape(50),
-                                        color = Color.Black
-                                    )
-                            )
-                            {
-                                DefaultText(text = profile.value.role, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .wrapContentSize()
-                                    .background(color = Color.White, shape = RoundedCornerShape(50))
-                                    .border(
-                                        width = 3.dp,
-                                        shape = RoundedCornerShape(50),
-                                        color = Color.Black
-                                    )
-                            )
-                            {
-                                DefaultText(text = profile.value.email, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = Color.Black)
-                            }
+                            DefaultText(text = profile.value.role, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
+                        }
+                        Box(
+                            modifier = Modifier.offset(y = -10.dp)
+                                .padding(top = 5.dp)
+                                .wrapContentSize()
+                                .background(color = Color.White, shape = RoundedCornerShape(50))
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
+                        )
+                        {
+                            DefaultText(text = profile.value.email, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = Color.Black)
                         }
                     }
                 }
                 Box(
                     modifier = Modifier
-                        .offset(x = 0.dp, y = (-80).dp)
+                        .offset(x = 0.dp, y = (-100).dp)
                         .fillMaxHeight(0.55f)
                         .fillMaxWidth(1f)
                         .background(color = profileCol, shape = RoundedCornerShape(50)),
@@ -170,7 +164,7 @@ fun ProfileScreen(navController: NavController)
                 )
                 {
                     Image(modifier = Modifier.fillMaxSize(0.9f),
-                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profilebig),
+                        painter = painterResource(id = R.drawable.profilebig),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
                     )
@@ -178,7 +172,7 @@ fun ProfileScreen(navController: NavController)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .absoluteOffset(y = (-25).dp),
+                        .absoluteOffset(y = (-10).dp),
                     contentAlignment = Alignment.BottomEnd
                 )
                 {
