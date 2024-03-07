@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -154,6 +155,9 @@ fun AuthorizationCard(navController: NavController, showError: Boolean): List<St
                 fontWeight = FontWeight.Bold
             )
         )
+        Spacer(modifier = Modifier.height(3.dp))
+        Divider(modifier = Modifier
+            .fillMaxWidth(0.5f), color = Color.Black, thickness = 4.dp)
     }
     return listOf(email, password)
 }
