@@ -50,6 +50,7 @@ import com.example.tsukeysmobile.Screens.keysService
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.ui.theme.*
 import com.google.gson.Gson
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import retrofit2.awaitResponse
 import java.util.*
@@ -71,7 +72,7 @@ fun TextFieldSample(
         mutableStateOf("")
     }
     TextField(
-        value = text,
+        value = value,
         placeholder = {DefaultText(text = placeholder, size = 20, modifier = Modifier, color = Color.Gray)},
         enabled = enabled,
         onValueChange = { newText ->
@@ -150,6 +151,7 @@ fun KeysMenuCreateKey()
 {
     val openDialog = remember { mutableStateOf(false) }
     val cabs = remember { mutableStateListOf<String>() }
+    val users = remember { mutableStateListOf<String>() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -226,11 +228,62 @@ fun KeysMenuCreateKey()
                         }
                     }
                     DefaultText(text = "кому:", size = 20, modifier = Modifier, color = Color.White)
-                    val message = remember{mutableStateOf("")}
-                    TextFieldSample(modifier = Modifier, onValueChange = {message.value = it}, placeholder = "введите email пользователя")
+
+                    val fullname = remember{mutableStateOf("")}
+                    var expanded1 by remember { mutableStateOf(false) }
+                    Box(
+                        modifier = Modifier
+                            .background(color = Color.Transparent)
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        contentAlignment = Alignment.Center
+                    )
+                    {
+                        DropdownMenu(
+                            modifier = Modifier
+                                .wrapContentSize()
+                                .background(color = Color.Black),
+                            offset = DpOffset(x = 50.dp, y = 0.dp),
+                            expanded = expanded1,
+                            onDismissRequest = { expanded1 = false },
+                        )
+                        {
+                            users.toSet().forEach { item ->
+                                DropdownMenuItem(
+                                    onClick = {
+                                        expanded1 = false
+                                        fullname.value = item
+                                    }
+                                )
+                                {
+                                    DefaultText(
+                                        text = item,
+                                        size = 20,
+                                        modifier = Modifier,
+                                        color = Color.White
+                                    )
+                                }
+                            }
+                        }
+                        var oldvalue: String
+                        TextFieldSample(value = fullname.value, modifier = Modifier.padding(horizontal = 30.dp), onValueChange = { it ->
+                            oldvalue = fullname.value
+                            fullname.value = it
+                            users.clear()
+                            if (it > oldvalue && fullname.value.isNotEmpty())
+                            {
+                                coroutineScope.launch {
+                                    delay(1000)
+                                    users.addAll(keysService.getRecipientsUsers(AUTHORIZE_TOKEN, fullname.value).awaitResponse().body()?.users?.map { it.email }?.toMutableStateList()!!)
+                                    if (users.size > 0) expanded1 = true
+                                }
+                            }
+                        },
+                            placeholder = "Введите имя пользователя")
+                    }
 
                     DefaultText(text = "ключ:", size = 20, modifier = Modifier, color = Color.White)
-                    var expanded by remember { mutableStateOf(false) }
+                    var expanded2 by remember { mutableStateOf(false) }
 
                     val cab = remember{mutableStateOf("")}
 
@@ -247,14 +300,14 @@ fun KeysMenuCreateKey()
                                 .wrapContentSize()
                                 .background(color = Color.Black),
                             offset = DpOffset(x = 50.dp, y = 0.dp),
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
+                            expanded = expanded2,
+                            onDismissRequest = { expanded2 = false },
                         )
                         {
                             cabs.forEachIndexed { index, item ->
                                 DropdownMenuItem(
                                     onClick = {
-                                        expanded = false
+                                        expanded2 = false
                                         cab.value = item
                                     }
                                 )
@@ -272,7 +325,7 @@ fun KeysMenuCreateKey()
                             value = cab.value,
                             onValueChange = {},
                             enabled = false,
-                            modifier = Modifier.clickable { expanded = true })
+                            modifier = Modifier.clickable { expanded2 = true })
                     }
 
                     Button(
@@ -284,7 +337,7 @@ fun KeysMenuCreateKey()
                             .padding(vertical = 10.dp),
                         onClick = {
                             coroutineScope.launch {
-                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, body = CreateRequestBody(keyRecipient = message.value, classroomNumber = cab.value)).awaitResponse()
+                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, body = CreateRequestBody(keyRecipient = fullname.value, classroomNumber = cab.value)).awaitResponse()
 
                                 if (response.isSuccessful)
                                 {
