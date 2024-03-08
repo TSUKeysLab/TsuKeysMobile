@@ -33,10 +33,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
-import com.example.tsukeysmobile.RequestCard
-import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.Screens.requests
@@ -71,11 +70,22 @@ fun OutcomeRequestCard(
                     }
                 }
             )
-        })
+        },
+        horizontalAlignment = Alignment.CenterHorizontally)
     {
+        val color: Color
+        if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(color = color, shape = RoundedCornerShape(50))
+        )
+        {
+            DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+        }
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
+            .padding(6.dp),
         horizontalArrangement = Arrangement.SpaceBetween)
         {
             DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
@@ -84,18 +94,6 @@ fun OutcomeRequestCard(
                 .size(20.dp)
             )
             DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
-
-            val color: Color
-            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 20.dp)
-                    .background(color = color, shape = RoundedCornerShape(50))
-            )
-            {
-                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
-            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -140,17 +138,28 @@ fun IncomeRequestCard(
             detectTapGestures(
                 onPress = {
                     if (!openKeyInRequestActionsMenu) {
-                        keyInRequest.value = outcoming.find { it.id == id }!!
+                        keyInRequest.value = incoming.find { it.id == id }!!
                         openKeyInRequestActionsMenu = true
                         status.value = Status
                     }
                 }
             )
-        })
+        },
+    horizontalAlignment = Alignment.CenterHorizontally)
     {
+        val color: Color
+        if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(color = color, shape = RoundedCornerShape(50))
+        )
+        {
+            DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+        }
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(6.dp)
         , horizontalArrangement = Arrangement.SpaceBetween)
         {
             Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
@@ -158,18 +167,6 @@ fun IncomeRequestCard(
             DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
             Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Green, modifier = Modifier.padding(horizontal = 5.dp))
             DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
-
-            val color: Color
-            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 20.dp)
-                    .background(color = color, shape = RoundedCornerShape(50))
-            )
-            {
-                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
-            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()

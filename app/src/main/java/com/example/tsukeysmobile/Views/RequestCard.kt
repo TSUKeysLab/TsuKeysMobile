@@ -5,8 +5,7 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
+
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -44,8 +43,7 @@ fun DefaultText(
 
             platformStyle = PlatformTextStyle(
                 includeFontPadding = false,
-            ),
-        )
+            ))
     )
 }
 
