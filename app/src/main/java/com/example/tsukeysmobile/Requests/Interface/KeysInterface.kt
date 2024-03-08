@@ -1,5 +1,7 @@
 package com.example.tsukeysmobile.Requests.Interface
 
+import com.example.tsukeysmobile.Requests.KeyRequests.KeyOwnedData
+import com.example.tsukeysmobile.Requests.KeyRequests.KeyRecipientUsersData
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.Keys.ReservKey
 import retrofit2.Call
@@ -27,4 +29,12 @@ interface KeysInterface {
         @Body request: ReservKey
     ): Call<Void>
 
+    @Headers("Content-Type: application/json")
+    @GET("key/owned")
+    fun getOwnedKeys(@Header("Authorization") token: String): Call<KeyOwnedData>
+
+    @Headers("Content-Type: application/json")
+    @GET("key/request/users")
+    fun getRecipientsUsers(@Header("Authorization") token: String,
+                           @Query("fullname") fullname: String): Call<KeyRecipientUsersData>
 }

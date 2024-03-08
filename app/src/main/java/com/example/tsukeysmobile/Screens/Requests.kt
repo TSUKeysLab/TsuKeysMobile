@@ -34,6 +34,7 @@ import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.RequestCard
+import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.Interface.RequestsInterface
 import com.example.tsukeysmobile.Views.RequestActionsMenu
 import com.example.tsukeysmobile.Views.openRequestActionsMenu
@@ -57,12 +58,13 @@ data class Request(
 
 var requests by mutableStateOf<MutableList<Request>>(mutableStateListOf())
 val requestService: RequestsInterface = retrofit.create(RequestsInterface::class.java)
+val keysService: KeysInterface = retrofit.create(KeysInterface::class.java)
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("UnrememberedMutableState", "RememberReturnType", "MutableCollectionMutableState",
     "CoroutineCreationDuringComposition"
 )
-@OptIn(ExperimentalAnimationApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RequestsScreen(navController: NavController)
 {
