@@ -120,7 +120,7 @@ fun KeyRequestOutcomeActionsMenu(context: Context)
                                     {
                                         val index = outcoming.indexOf(keyOutRequest.value)
                                         outcoming[index].visibleState.targetState = false
-                                        openKeyInRequestActionsMenu = false
+                                        openKeyOutRequestActionsMenu = false
                                     }
                                     else
                                     {

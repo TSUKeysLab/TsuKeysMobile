@@ -43,8 +43,10 @@ import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
 import com.example.tsukeysmobile.Requests.Error.ErrorData
+import com.example.tsukeysmobile.Requests.Interface.KeysInterface
 import com.example.tsukeysmobile.Requests.KeyRequests.CreateRequestBody
 import com.example.tsukeysmobile.Screens.Request
+import com.example.tsukeysmobile.Screens.keysService
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.ui.theme.*
 import com.google.gson.Gson
@@ -55,7 +57,6 @@ import java.util.EnumSet.range
 import kotlin.math.exp
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TextFieldSample(
     placeholder: String = "",
@@ -100,7 +101,6 @@ fun TextFieldSample(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun TextFieldChooseSample(
     value: String = "",
@@ -149,6 +149,14 @@ fun TextFieldChooseSample(
 fun KeysMenuCreateKey()
 {
     val openDialog = remember { mutableStateOf(false) }
+    val cabs = remember { mutableStateListOf<String>() }
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            cabs.addAll(keysService.getOwnedKeys(AUTHORIZE_TOKEN).awaitResponse().body()?.map { it.classroomNumber }?.toMutableStateList()!!)
+        }
+    }
 
     Row(
         modifier = Modifier
@@ -223,7 +231,7 @@ fun KeysMenuCreateKey()
 
                     DefaultText(text = "ключ:", size = 20, modifier = Modifier, color = Color.White)
                     var expanded by remember { mutableStateOf(false) }
-                    val items = listOf("227", "228", "229", "229", "229", "229")
+
                     val cab = remember{mutableStateOf("")}
 
                     Box(
@@ -243,16 +251,16 @@ fun KeysMenuCreateKey()
                             onDismissRequest = { expanded = false },
                         )
                         {
-                            for (i in items) {
+                            cabs.forEachIndexed { index, item ->
                                 DropdownMenuItem(
                                     onClick = {
                                         expanded = false
-                                        cab.value = i
+                                        cab.value = item
                                     }
                                 )
                                 {
                                     DefaultText(
-                                        text = i,
+                                        text = item,
                                         size = 20,
                                         modifier = Modifier,
                                         color = Color.White
@@ -266,7 +274,6 @@ fun KeysMenuCreateKey()
                             enabled = false,
                             modifier = Modifier.clickable { expanded = true })
                     }
-                    val coroutineScope = rememberCoroutineScope()
 
                     Button(
                         colors = ButtonDefaults.buttonColors(darkGray),
@@ -281,7 +288,8 @@ fun KeysMenuCreateKey()
 
                                 if (response.isSuccessful)
                                 {
-
+                                    Toast.makeText(context, "Успешно!", Toast.LENGTH_SHORT).show()
+                                    openDialog.value = false
                                 }
                                 else
                                 {

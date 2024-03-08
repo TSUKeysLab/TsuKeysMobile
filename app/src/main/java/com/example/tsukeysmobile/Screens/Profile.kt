@@ -210,7 +210,7 @@ fun ProfileScreen(navController: NavController)
                     Image(modifier = Modifier
                         .size(25.dp)
                         .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
-                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
+                        painter = painterResource(id = R.drawable.book),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
                     )

@@ -62,7 +62,7 @@ fun OutcomeRequestCard(
         .pointerInput(Unit)
         {
             detectTapGestures(
-                onPress = {
+                onTap = {
                     if (!openKeyOutRequestActionsMenu) {
                         keyOutRequest.value = outcoming.find { it.id == id }!!
                         openKeyOutRequestActionsMenu = true
@@ -136,7 +136,7 @@ fun IncomeRequestCard(
         .pointerInput(Unit)
         {
             detectTapGestures(
-                onPress = {
+                onTap = {
                     if (!openKeyInRequestActionsMenu) {
                         keyInRequest.value = incoming.find { it.id == id }!!
                         openKeyInRequestActionsMenu = true
@@ -191,12 +191,36 @@ fun IncomeRequestCard(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+var incoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+var outcoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShowOutComing(
-    outcoming: MutableList<Request>,
-)
+fun ShowOutComing()
 {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            val response = requestService.getKeyRequests(AUTHORIZE_TOKEN, "Owner")
+                .awaitResponse().body()
+            if (response != null) outcoming = response.map {
+                Request(
+                    id = it.requestId,
+                    {
+                        OutcomeRequestCard(
+                            id = it.requestId,
+                            Sender = it.keyRecipientFullName,
+                            Cab = it.classroomNumber,
+                            Till = it.endOfRequest,
+                            Status = it.status
+                        )
+                    })
+            }.toMutableStateList()
+            println(outcoming.size)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -230,12 +254,34 @@ fun ShowOutComing(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun ShowInComing(
-    incoming: MutableList<Request>,
-)
+fun ShowInComing()
 {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            var response =
+                requestService.getKeyRequests(AUTHORIZE_TOKEN, "Recipient")
+                    .awaitResponse().body()
+            if (response != null) incoming = response.map {
+                Request(
+                    id = it.requestId,
+                    {
+                        IncomeRequestCard(
+                            id = it.requestId,
+                            Sender = it.keyOwnerFullName,
+                            Cab = it.classroomNumber,
+                            Till = it.endOfRequest,
+                            Status = it.status
+                        )
+                    })
+            }.toMutableStateList()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -262,8 +308,7 @@ fun ShowInComing(
 }
 
 var openKeysMenu by mutableStateOf(false)
-var incoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
-var outcoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+@SuppressLint("StaticFieldLeak")
 lateinit var context: Context
 
 var status: MutableState<String> = mutableStateOf("")
@@ -352,46 +397,6 @@ fun KeysMenu()
 
                         val tabs = listOf("входящие", "исходящие")
 
-                        val coroutineScope = rememberCoroutineScope()
-
-                        LaunchedEffect(Unit) {
-                            coroutineScope.launch {
-                                var response =
-                                    requestService.getKeyRequests(AUTHORIZE_TOKEN, "Recipient")
-                                        .awaitResponse().body()
-                                if (response != null) incoming = response.map {
-                                    Request(
-                                        id = it.requestId,
-                                        {
-                                            IncomeRequestCard(
-                                                id = it.requestId,
-                                                Sender = it.keyOwnerFullName,
-                                                Cab = it.classroomNumber,
-                                                Till = it.endOfRequest,
-                                                Status = it.status
-                                            )
-                                        })
-                                }.toMutableStateList()
-
-                                response = requestService.getKeyRequests(AUTHORIZE_TOKEN, "Owner")
-                                    .awaitResponse().body()
-                                if (response != null) outcoming = response.map {
-                                    Request(
-                                        id = it.requestId,
-                                        {
-                                            OutcomeRequestCard(
-                                                id = it.requestId,
-                                                Sender = it.keyRecipientFullName,
-                                                Cab = it.classroomNumber,
-                                                Till = it.endOfRequest,
-                                                Status = it.status
-                                            )
-                                        })
-                                }.toMutableStateList()
-                                println(outcoming.size)
-                            }
-                        }
-
                         Column(modifier = Modifier.fillMaxWidth())
                         {
                             TabRow(
@@ -417,8 +422,8 @@ fun KeysMenu()
                                 }
                             }
                             when (tabIndex) {
-                                0 -> ShowInComing(incoming)
-                                1 -> ShowOutComing(outcoming)
+                                0 -> ShowInComing()
+                                1 -> ShowOutComing()
                             }
                         }
                     }
