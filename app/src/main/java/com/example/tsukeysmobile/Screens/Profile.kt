@@ -1,11 +1,14 @@
 package com.example.tsukeysmobile.Screens
-import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -17,15 +20,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
-import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Requests.Interface.ProfileInterface
 import com.example.tsukeysmobile.Requests.Profile.ProfileData
 import com.example.tsukeysmobile.Views.KeysMenu
 import com.example.tsukeysmobile.Views.openKeysMenu
-import com.example.tsukeysmobile.Views.openRequestActionsMenu
 import com.example.tsukeysmobile.retrofit
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
@@ -38,6 +40,7 @@ import java.util.*
 val profileService: ProfileInterface = retrofit.create(ProfileInterface::class.java)
 var profile:MutableState<ProfileData> = mutableStateOf(ProfileData())
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ProfileScreen(navController: NavController)
 {
@@ -46,7 +49,23 @@ fun ProfileScreen(navController: NavController)
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             val response = profileService.getProfile(AUTHORIZE_TOKEN).awaitResponse().body()
-            if (response!=null) profile.value = response
+            if (response != null) profile.value = response
+        }
+    }
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    )
+    {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height = 80.dp)
+                .background(color = Color.Black)
+                .zIndex(1f)
+        )
+        {
+            DefaultText(text = "профиль", size = 70, modifier = Modifier.offset(x = 20.dp, y = 12.dp))
         }
     }
     Box(modifier = Modifier
@@ -104,46 +123,40 @@ fun ProfileScreen(navController: NavController)
                         verticalArrangement = Arrangement.Center
                     )
                     {
-                        Column(modifier = Modifier.wrapContentSize(),
-                            verticalArrangement = Arrangement.Center,
-                            horizontalAlignment = Alignment.CenterHorizontally
+                        DefaultText(text = profile.value.fullname, size = 40, modifier = Modifier.offset(y = -10.dp))
+                        Box(
+                            modifier = Modifier.offset(y = -10.dp)
+                                .padding(top = 5.dp)
+                                .wrapContentSize()
+                                .background(color = Color.White, shape = RoundedCornerShape(50))
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
                         )
                         {
-                            DefaultText(text = profile.value.fullname, size = 40, modifier = Modifier)
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .wrapContentSize()
-                                    .background(color = Color.White, shape = RoundedCornerShape(50))
-                                    .border(
-                                        width = 3.dp,
-                                        shape = RoundedCornerShape(50),
-                                        color = Color.Black
-                                    )
-                            )
-                            {
-                                DefaultText(text = profile.value.role, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .padding(top = 5.dp)
-                                    .wrapContentSize()
-                                    .background(color = Color.White, shape = RoundedCornerShape(50))
-                                    .border(
-                                        width = 3.dp,
-                                        shape = RoundedCornerShape(50),
-                                        color = Color.Black
-                                    )
-                            )
-                            {
-                                DefaultText(text = profile.value.email, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = Color.Black)
-                            }
+                            DefaultText(text = profile.value.role, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = darkGreen)
+                        }
+                        Box(
+                            modifier = Modifier.offset(y = -10.dp)
+                                .padding(top = 5.dp)
+                                .wrapContentSize()
+                                .background(color = Color.White, shape = RoundedCornerShape(50))
+                                .border(
+                                    width = 3.dp,
+                                    shape = RoundedCornerShape(50),
+                                    color = Color.Black
+                                )
+                        )
+                        {
+                            DefaultText(text = profile.value.email, size = 20, modifier = Modifier.padding(vertical = 7.dp, horizontal = 15.dp), color = Color.Black)
                         }
                     }
                 }
                 Box(
                     modifier = Modifier
-                        .offset(x = 0.dp, y = (-80).dp)
+                        .offset(x = 0.dp, y = (-100).dp)
                         .fillMaxHeight(0.55f)
                         .fillMaxWidth(1f)
                         .background(color = profileCol, shape = RoundedCornerShape(50)),
@@ -151,7 +164,7 @@ fun ProfileScreen(navController: NavController)
                 )
                 {
                     Image(modifier = Modifier.fillMaxSize(0.9f),
-                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.profilebig),
+                        painter = painterResource(id = R.drawable.profilebig),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
                     )
@@ -159,7 +172,7 @@ fun ProfileScreen(navController: NavController)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .absoluteOffset(y = (-25).dp),
+                        .absoluteOffset(y = (-10).dp),
                     contentAlignment = Alignment.BottomEnd
                 )
                 {
@@ -197,7 +210,7 @@ fun ProfileScreen(navController: NavController)
                     Image(modifier = Modifier
                         .size(25.dp)
                         .clickable { navController.navigate(Screen.BookScreen.withArgs()) },
-                        painter = painterResource(id = com.example.tsukeysmobile.R.drawable.book),
+                        painter = painterResource(id = R.drawable.book),
                         contentDescription = null,
                         contentScale = ContentScale.Fit
                     )

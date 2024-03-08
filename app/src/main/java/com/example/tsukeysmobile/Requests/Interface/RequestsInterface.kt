@@ -29,18 +29,18 @@ interface RequestsInterface {
                        @Query ("userStatus") userStatus: String): Call<KeyRequests>
 
     @Headers("Content-Type: application/json")
-    @DELETE("key/delete/request")
+    @DELETE("key/delete/request/{request}")
     fun deleteKeyRequest(@Header("Authorization") token: String,
-                       @Query ("request") requestId: String): Call<Void>
+                       @Path ("request") requestId: String): Call<Void>
 
     @Headers("Content-Type: application/json")
-    @PUT("key/accept/request")
+    @PUT("key/accept/request/{id}")
     fun acceptKeyRequest(@Header("Authorization") token: String,
-                         @Query ("id") requestId: String): Call<Void>
+                         @Path ("id") requestId: String): Call<Void>
     @Headers("Content-Type: application/json")
-    @PUT("key/confirm/getting")
+    @PUT("key/confirm/getting/{request}")
     fun confirmKeyRequestFromPeople(@Header("Authorization") token: String,
-                         @Query ("request") requestId: String): Call<Void>
+                         @Path ("request") requestId: String): Call<Void>
 
     @Headers("Content-Type: application/json")
     @POST("key/request")

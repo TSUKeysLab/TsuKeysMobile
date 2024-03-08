@@ -50,6 +50,13 @@ import java.util.regex.Pattern
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CabScreen(navController: NavController, dateAndLes: String) {
+    val req = RequestsFunctions()
+    LaunchedEffect(Unit) {
+        if (req.checkUserAuth() == 401 || req.checkUserAuth() == 500) {
+            navController.navigate(Screen.AuthScreen.withArgs())
+        }
+    }
+
     var keys by remember { mutableStateOf<List<KeysDataItem>>(emptyList()) }
     
     Column(

@@ -33,10 +33,9 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.example.tsukeysmobile.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.R
-import com.example.tsukeysmobile.RequestCard
-import com.example.tsukeysmobile.Requests.AUTHORIZE_TOKEN
 import com.example.tsukeysmobile.Screens.Request
 import com.example.tsukeysmobile.Screens.requestService
 import com.example.tsukeysmobile.Screens.requests
@@ -63,7 +62,7 @@ fun OutcomeRequestCard(
         .pointerInput(Unit)
         {
             detectTapGestures(
-                onPress = {
+                onTap = {
                     if (!openKeyOutRequestActionsMenu) {
                         keyOutRequest.value = outcoming.find { it.id == id }!!
                         openKeyOutRequestActionsMenu = true
@@ -71,11 +70,22 @@ fun OutcomeRequestCard(
                     }
                 }
             )
-        })
+        },
+        horizontalAlignment = Alignment.CenterHorizontally)
     {
+        val color: Color
+        if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(color = color, shape = RoundedCornerShape(50))
+        )
+        {
+            DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+        }
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
+            .padding(6.dp),
         horizontalArrangement = Arrangement.SpaceBetween)
         {
             DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
@@ -84,18 +94,6 @@ fun OutcomeRequestCard(
                 .size(20.dp)
             )
             DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
-
-            val color: Color
-            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 20.dp)
-                    .background(color = color, shape = RoundedCornerShape(50))
-            )
-            {
-                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
-            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -138,19 +136,30 @@ fun IncomeRequestCard(
         .pointerInput(Unit)
         {
             detectTapGestures(
-                onPress = {
+                onTap = {
                     if (!openKeyInRequestActionsMenu) {
-                        keyInRequest.value = outcoming.find { it.id == id }!!
+                        keyInRequest.value = incoming.find { it.id == id }!!
                         openKeyInRequestActionsMenu = true
                         status.value = Status
                     }
                 }
             )
-        })
+        },
+    horizontalAlignment = Alignment.CenterHorizontally)
     {
+        val color: Color
+        if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .background(color = color, shape = RoundedCornerShape(50))
+        )
+        {
+            DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
+        }
         Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(6.dp)
         , horizontalArrangement = Arrangement.SpaceBetween)
         {
             Image(painter = painterResource(id = R.drawable.sender), contentDescription = null, modifier = Modifier
@@ -158,18 +167,6 @@ fun IncomeRequestCard(
             DefaultText(text = Sender, size = 17, modifier = Modifier, color = Color.White)
             Icon(imageVector = Icons.Filled.KeyboardArrowRight, contentDescription = null, tint = Color.Green, modifier = Modifier.padding(horizontal = 5.dp))
             DefaultText(text = "You", size = 17, modifier = Modifier, color = Color.White)
-
-            val color: Color
-            if (Status == "Pending") color = gray else if (Status == "Approved") color = Color.Green else color = Color.Red
-            Row(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 20.dp)
-                    .background(color = color, shape = RoundedCornerShape(50))
-            )
-            {
-                DefaultText(text = Status, size = 15, modifier = Modifier.padding(vertical = 2.dp, horizontal = 5.dp))
-            }
         }
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -194,12 +191,36 @@ fun IncomeRequestCard(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+var incoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+var outcoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ShowOutComing(
-    outcoming: MutableList<Request>,
-)
+fun ShowOutComing()
 {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            val response = requestService.getKeyRequests(AUTHORIZE_TOKEN, "Owner")
+                .awaitResponse().body()
+            if (response != null) outcoming = response.map {
+                Request(
+                    id = it.requestId,
+                    {
+                        OutcomeRequestCard(
+                            id = it.requestId,
+                            Sender = it.keyRecipientFullName,
+                            Cab = it.classroomNumber,
+                            Till = it.endOfRequest,
+                            Status = it.status
+                        )
+                    })
+            }.toMutableStateList()
+            println(outcoming.size)
+        }
+    }
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -233,12 +254,34 @@ fun ShowOutComing(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
 @Composable
-fun ShowInComing(
-    incoming: MutableList<Request>,
-)
+fun ShowInComing()
 {
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(Unit) {
+        coroutineScope.launch {
+            var response =
+                requestService.getKeyRequests(AUTHORIZE_TOKEN, "Recipient")
+                    .awaitResponse().body()
+            if (response != null) incoming = response.map {
+                Request(
+                    id = it.requestId,
+                    {
+                        IncomeRequestCard(
+                            id = it.requestId,
+                            Sender = it.keyOwnerFullName,
+                            Cab = it.classroomNumber,
+                            Till = it.endOfRequest,
+                            Status = it.status
+                        )
+                    })
+            }.toMutableStateList()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -265,8 +308,7 @@ fun ShowInComing(
 }
 
 var openKeysMenu by mutableStateOf(false)
-var incoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
-var outcoming by mutableStateOf<MutableList<Request>>(mutableStateListOf())
+@SuppressLint("StaticFieldLeak")
 lateinit var context: Context
 
 var status: MutableState<String> = mutableStateOf("")
@@ -355,46 +397,6 @@ fun KeysMenu()
 
                         val tabs = listOf("входящие", "исходящие")
 
-                        val coroutineScope = rememberCoroutineScope()
-
-                        LaunchedEffect(Unit) {
-                            coroutineScope.launch {
-                                var response =
-                                    requestService.getKeyRequests(AUTHORIZE_TOKEN, "Recipient")
-                                        .awaitResponse().body()
-                                if (response != null) incoming = response.map {
-                                    Request(
-                                        id = it.requestId,
-                                        {
-                                            IncomeRequestCard(
-                                                id = it.requestId,
-                                                Sender = it.keyOwnerFullName,
-                                                Cab = it.classroomNumber,
-                                                Till = it.endOfRequest,
-                                                Status = it.status
-                                            )
-                                        })
-                                }.toMutableStateList()
-
-                                response = requestService.getKeyRequests(AUTHORIZE_TOKEN, "Owner")
-                                    .awaitResponse().body()
-                                if (response != null) outcoming = response.map {
-                                    Request(
-                                        id = it.requestId,
-                                        {
-                                            OutcomeRequestCard(
-                                                id = it.requestId,
-                                                Sender = it.keyRecipientFullName,
-                                                Cab = it.classroomNumber,
-                                                Till = it.endOfRequest,
-                                                Status = it.status
-                                            )
-                                        })
-                                }.toMutableStateList()
-                                println(outcoming.size)
-                            }
-                        }
-
                         Column(modifier = Modifier.fillMaxWidth())
                         {
                             TabRow(
@@ -420,8 +422,8 @@ fun KeysMenu()
                                 }
                             }
                             when (tabIndex) {
-                                0 -> ShowInComing(incoming)
-                                1 -> ShowOutComing(outcoming)
+                                0 -> ShowInComing()
+                                1 -> ShowOutComing()
                             }
                         }
                     }
