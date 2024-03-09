@@ -58,99 +58,13 @@ import java.util.EnumSet.range
 import kotlin.math.exp
 
 
-@Composable
-fun TextFieldSample(
-    placeholder: String = "",
-    value: String = "",
-    enabled: Boolean = true,
-    modifier: Modifier,
-    onValueChange: (String) -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current!!
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
-    TextField(
-        value = value,
-        placeholder = {DefaultText(text = placeholder, size = 20, modifier = Modifier, color = Color.Gray)},
-        enabled = enabled,
-        onValueChange = { newText ->
-            run {
-                onValueChange(newText)
-                text = newText
-            }
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = { keyboardController.hide(); focusManager.clearFocus() }),
-        singleLine = true,
-        modifier = modifier
-            .background(Color.Transparent)
-            .border(
-                width = 2.dp, color = Color.Black
-            ),
-        textStyle = TextStyle(
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp,
-            color = Color.White,
-            fontFamily = FontFamily(Font(R.font.interblack)),
-        ),
-        colors = TextFieldDefaults.textFieldColors(
-            cursorColor = Color.White,
-        ),
-    )
-}
+var openDialogCreateKeyDean by mutableStateOf(false)
 
-@Composable
-fun TextFieldChooseSample(
-    value: String = "",
-    enabled: Boolean = true,
-    modifier: Modifier,
-    onValueChange: (String) -> Unit,
-) {
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current!!
-    var text by rememberSaveable {
-        mutableStateOf("")
-    }
-    TextField(
-        value = value,
-        enabled = enabled,
-        onValueChange = { newText ->
-            run {
-                onValueChange(newText)
-                text = newText
-            }
-        },
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions(
-            onDone = { keyboardController.hide(); focusManager.clearFocus() }),
-        singleLine = true,
-        modifier = modifier
-            .background(Color.Transparent)
-            .border(
-                width = 2.dp, color = Color.Black
-            ),
-        textStyle = TextStyle(
-            textAlign = TextAlign.Center,
-            fontSize = 30.sp,
-            color = Color.White,
-            fontFamily = FontFamily(Font(R.font.interblack)),
-        ),
-        colors = TextFieldDefaults.textFieldColors(
-            cursorColor = Color.White,
-        ),
-    )
-}
-
-var openDialogCreateKey by mutableStateOf(false)
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun KeysMenuCreateKey()
+fun KeysMenuCreateKeyDean()
 {
     val cabs = remember { mutableStateListOf<String>() }
-    val users = remember { mutableStateListOf<String>() }
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -158,7 +72,6 @@ fun KeysMenuCreateKey()
             cabs.addAll(keysService.getOwnedKeys(AUTHORIZE_TOKEN).awaitResponse().body()?.map { it.classroomNumber }?.toMutableStateList()!!)
         }
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize(),
@@ -166,7 +79,7 @@ fun KeysMenuCreateKey()
     )
     {
 
-        if (openDialogCreateKey)
+        if (openDialogCreateKeyDean)
         {
             Box(modifier = Modifier
                 .background(color = gray, shape = RoundedCornerShape(10.dp))
@@ -200,7 +113,7 @@ fun KeysMenuCreateKey()
                             )
                         }
                         Box(modifier = Modifier
-                            .clickable { openDialogCreateKey = !openDialogCreateKey }
+                            .clickable { openDialogCreateKeyDean = !openDialogCreateKeyDean}
                             .background(color = darkGray)
                             .size(30.dp), contentAlignment = Alignment.Center)
                         {
@@ -212,61 +125,6 @@ fun KeysMenuCreateKey()
                             )
                         }
                     }
-                    DefaultText(text = "кому:", size = 20, modifier = Modifier, color = Color.White)
-
-                    val fullname = remember{mutableStateOf("")}
-                    var expanded1 by remember { mutableStateOf(false) }
-                    Box(
-                        modifier = Modifier
-                            .background(color = Color.Transparent)
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                        contentAlignment = Alignment.Center
-                    )
-                    {
-                        DropdownMenu(
-                            modifier = Modifier
-                                .wrapContentSize()
-                                .background(color = Color.Black),
-                            offset = DpOffset(x = 50.dp, y = 0.dp),
-                            expanded = expanded1,
-                            onDismissRequest = { expanded1 = false },
-                        )
-                        {
-                            users.toSet().forEach { item ->
-                                DropdownMenuItem(
-                                    onClick = {
-                                        expanded1 = false
-                                        fullname.value = item
-                                    }
-                                )
-                                {
-                                    DefaultText(
-                                        text = item,
-                                        size = 20,
-                                        modifier = Modifier,
-                                        color = Color.White
-                                    )
-                                }
-                            }
-                        }
-                        var oldvalue: String
-                        TextFieldSample(value = fullname.value, modifier = Modifier.padding(horizontal = 30.dp), onValueChange = { it ->
-                            oldvalue = fullname.value
-                            fullname.value = it
-                            users.clear()
-                            if (it > oldvalue && fullname.value.isNotEmpty())
-                            {
-                                coroutineScope.launch {
-                                    delay(1000)
-                                    users.addAll(keysService.getRecipientsUsers(AUTHORIZE_TOKEN, fullname.value).awaitResponse().body()?.users?.map { it.email }?.toMutableStateList()!!)
-                                    if (users.size > 0) expanded1 = true
-                                }
-                            }
-                        },
-                            placeholder = "Введите имя пользователя")
-                    }
-
                     DefaultText(text = "ключ:", size = 20, modifier = Modifier, color = Color.White)
                     var expanded2 by remember { mutableStateOf(false) }
 
@@ -322,12 +180,12 @@ fun KeysMenuCreateKey()
                             .padding(vertical = 10.dp),
                         onClick = {
                             coroutineScope.launch {
-                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, body = CreateRequestBody(keyRecipient = fullname.value, classroomNumber = cab.value)).awaitResponse()
+                                val response = requestService.createKeyRequest(AUTHORIZE_TOKEN, body = CreateRequestBody(keyRecipient = "Dean", classroomNumber = cab.value)).awaitResponse()
 
                                 if (response.isSuccessful)
                                 {
                                     Toast.makeText(context, "Успешно! Обновите страницу", Toast.LENGTH_SHORT).show()
-                                    openDialogCreateKey = false
+                                    openDialogCreateKeyDean = false
                                 }
                                 else
                                 {
@@ -339,7 +197,7 @@ fun KeysMenuCreateKey()
                         }
                     )
                     {
-                        DefaultText(text = "Передать ключ", size = 25, modifier = Modifier.padding(horizontal = 20.dp))
+                        DefaultText(text = "Сдать ключ", size = 25, modifier = Modifier.padding(horizontal = 20.dp))
                     }
                 }
             }
