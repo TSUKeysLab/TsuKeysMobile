@@ -17,10 +17,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Tab
-import androidx.compose.material.TabRow
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.runtime.*
@@ -223,39 +220,72 @@ fun ShowOutComing()
     }
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 20.dp),
-        contentAlignment = Alignment.BottomCenter
+            .fillMaxSize(),
+        contentAlignment = Alignment.TopCenter,
     )
     {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 10.dp, horizontal = 20.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        )
-        {
-            items(items = outcoming, key = { it.id })
-            { request ->
-                if (!request.visibleState.currentState && !request.visibleState.targetState) outcoming.remove(request)
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .animateItemPlacement(),
-                    visibleState = request.visibleState,
-                    enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                    exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
-                )
-                {
-                    request.element()
+        Column(modifier = Modifier
+            .fillMaxSize()
+            .padding(bottom = 20.dp), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.SpaceBetween) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.6f)
+                    .padding(vertical = 10.dp, horizontal = 20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            )
+            {
+                items(items = outcoming, key = { it.id })
+                { request ->
+                    if (!request.visibleState.currentState && !request.visibleState.targetState) outcoming.remove(request)
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .animateItemPlacement(),
+                        visibleState = request.visibleState,
+                        enter = scaleIn(animationSpec = tween(durationMillis = 100)),
+                        exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
+                    )
+                    {
+                        request.element()
+                    }
                 }
+            }
+            Divider(modifier = Modifier.fillMaxWidth().height(3.dp).padding(horizontal = 20.dp), color = Color.Black)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .wrapContentHeight()
+                    .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
+                    .clickable { openDialogCreateKey = true },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                Image(painter = painterResource(id = R.drawable.img), contentDescription = null, modifier = Modifier.size(50.dp))
+                DefaultText(text = "Передать\nключ", size = 20, modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp), color = Color.White)
+
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .wrapContentHeight()
+                    .background(color = Color.Gray, shape = RoundedCornerShape(10.dp))
+                    .clickable { openDialogCreateKeyDean = true },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            )
+            {
+                DefaultText(text = "Cдать ключ в деканат", size = 20, modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp), color = Color.White)
+
             }
         }
         KeysMenuCreateKey()
+        KeysMenuCreateKeyDean()
     }
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@OptIn(ExperimentalFoundationApi::class, ExperimentalAnimationApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ShowInComing()
 {
@@ -335,7 +365,8 @@ fun KeysMenu()
         )
 
         Box(
-            modifier = Modifier.blur(blurAmount.dp)
+            modifier = Modifier
+                .blur(blurAmount.dp)
                 .fillMaxWidth(0.9f)
                 .fillMaxHeight(0.7f)
                 .padding(horizontal = 5.dp),
@@ -368,7 +399,15 @@ fun KeysMenu()
                         {
                             Box(
                                 modifier = Modifier
-                                    .clickable { Toast.makeText(context, "Заявки на передачу ключей", Toast.LENGTH_SHORT).show() }
+                                    .clickable {
+                                        Toast
+                                            .makeText(
+                                                context,
+                                                "Заявки на передачу ключей",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                            .show()
+                                    }
                                     .background(color = darkGray, shape = RoundedCornerShape(50))
                                     .size(30.dp), contentAlignment = Alignment.Center
                             )
