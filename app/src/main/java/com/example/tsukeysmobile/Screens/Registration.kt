@@ -106,24 +106,33 @@ fun RegistrationScreen(navController: NavController) {
             elements = RegistrationCard(navController)
             if (ready == true) {
                 val req = RequestsFunctions()
-
-                LaunchedEffect(Unit) {
-                    val resp = req.postRegistration(
-                        name = elements[0],
-                        surname = elements[1],
-                        bd = elements[2],
-                        gender = elements[3],
-                        email = elements[4],
-                        password = elements[5]
-                    )
+                if (elements[2] == "") {
+                    Toast.makeText(context, "Выберите дату рождения", Toast.LENGTH_SHORT).show()
                     ready = false
-                    if (resp.code() == 200) {
-                        navController.navigate(Screen.RequestsScreen.withArgs())
-                    } else {
-                        val errorResponse = Gson().fromJson(resp.errorBody()?.string(), ErrorData::class.java)
-                        Toast.makeText(context, "Ещё раз проверьте все поля", Toast.LENGTH_SHORT).show()
-                    }
+                } else if (elements[3] == "") {
+                    Toast.makeText(context, "Выберите пол", Toast.LENGTH_SHORT).show()
+                    ready = false
+                } else {
+                    LaunchedEffect(Unit) {
+                        val resp = req.postRegistration(
+                            name = elements[0],
+                            surname = elements[1],
+                            bd = elements[2],
+                            gender = elements[2],
+                            email = elements[4],
+                            password = elements[5]
+                        )
+                        ready = false
+                        if (resp.code() == 200) {
+                            navController.navigate(Screen.RequestsScreen.withArgs())
+                        } else {
+                            val errorResponse =
+                                Gson().fromJson(resp.errorBody()?.string(), ErrorData::class.java)
+                            Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT)
+                                .show()
+                        }
 
+                    }
                 }
             }
 
