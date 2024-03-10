@@ -3,6 +3,7 @@ package com.example.tsukeysmobile.Screens
 
 import android.os.Build
 import android.util.Log
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -37,6 +38,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -49,18 +51,20 @@ import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.Views.BookCard
 import com.example.tsukeysmobile.Views.RegistrationCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
+import com.google.gson.Gson
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun RegistrationScreen(navController: NavController) {
     var elements: List<String>
     var ready by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
 
 
@@ -102,6 +106,7 @@ fun RegistrationScreen(navController: NavController) {
             elements = RegistrationCard(navController)
             if (ready == true) {
                 val req = RequestsFunctions()
+
                 LaunchedEffect(Unit) {
                     val resp = req.postRegistration(
                         name = elements[0],
@@ -111,10 +116,14 @@ fun RegistrationScreen(navController: NavController) {
                         email = elements[4],
                         password = elements[5]
                     )
-                    if(resp.code() == 200){
-                        navController.navigate(Screen.RequestsScreen.withArgs())
-                    }
                     ready = false
+                    if (resp.code() == 200) {
+                        navController.navigate(Screen.RequestsScreen.withArgs())
+                    } else {
+                        val errorResponse = Gson().fromJson(resp.errorBody()?.string(), ErrorData::class.java)
+                        Toast.makeText(context, "Ещё раз проверьте все поля", Toast.LENGTH_SHORT).show()
+                    }
+
                 }
             }
 

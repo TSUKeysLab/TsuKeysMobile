@@ -30,7 +30,7 @@ class RequestsFunctions {
         month: Int,
         day: Int,
         timeId: Int
-    ): List<KeysDataItem> {
+    ): Response<List<KeysDataItem>> {
         return suspendCoroutine { continuation ->
             val keysInterface = retrofit.create(KeysInterface::class.java)
             val retrofitData =
@@ -45,16 +45,15 @@ class RequestsFunctions {
                         val responseBody = response.body()
                         val keys = responseBody ?: emptyList()
                         Log.d("Res", keys.size.toString())
-                        continuation.resume(keys)
+                        continuation.resume(response)
                     } else {
                         Log.d("Fail", "Unsuccessful response: ${response.code()}")
-                        continuation.resume(emptyList())
+                        continuation.resume(response)
                     }
                 }
 
                 override fun onFailure(call: Call<List<KeysDataItem>>, t: Throwable) {
                     Log.d("Fail", t.message!!)
-                    continuation.resume(emptyList())
                 }
             })
         }

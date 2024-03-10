@@ -2,6 +2,7 @@ package com.example.tsukeysmobile.Views
 
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -29,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -37,17 +39,18 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
+import com.google.gson.Gson
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AuthorizationScreen(navController: NavController) {
     var elements: List<String>
     var ready by remember { mutableStateOf(false) }
-    var showError by remember { mutableStateOf(false) }
-
+    val context = LocalContext.current
 
 
     Column(
@@ -86,7 +89,7 @@ fun AuthorizationScreen(navController: NavController) {
         )
         {
 
-            elements = AuthorizationCard(navController, showError)
+            elements = AuthorizationCard(navController)
             if (ready == true) {
                 val req = RequestsFunctions()
                 LaunchedEffect(Unit) {
@@ -97,10 +100,10 @@ fun AuthorizationScreen(navController: NavController) {
                     ready = false
 
                     if (resp.code() == 200) {
-                        showError = false
                         navController.navigate(Screen.RequestsScreen.withArgs())
                     } else {
-                        showError = true
+                        val errorResponse = Gson().fromJson(resp.errorBody()?.string(), ErrorData::class.java)
+                        Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
