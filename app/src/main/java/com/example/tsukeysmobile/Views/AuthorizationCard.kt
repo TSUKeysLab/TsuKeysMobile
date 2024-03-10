@@ -159,7 +159,7 @@ fun AuthorizationElement(topLabel: String, text: String, type: String): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AuthorizationCard(navController: NavController, showError: Boolean): List<String> {
+fun AuthorizationCard(navController: NavController): List<String> {
 
     var email = ""
     var password = ""
@@ -192,15 +192,6 @@ fun AuthorizationCard(navController: NavController, showError: Boolean): List<St
 
         ) {
             password = AuthorizationElement("пароль", "Введите пароль", "password")
-        }
-        if (showError) {
-
-            DefaultText(
-                text = "Неверные почта или пароль",
-                size = 15,
-                color = Color.Red,
-                modifier = Modifier
-            )
         }
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
