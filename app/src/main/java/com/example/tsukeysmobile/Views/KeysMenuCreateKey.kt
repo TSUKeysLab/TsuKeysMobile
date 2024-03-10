@@ -335,7 +335,6 @@ fun KeysMenuCreateKey()
                                     Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT).show()
                                 }
                             }
-
                         }
                     )
                     {

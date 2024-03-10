@@ -34,6 +34,11 @@ interface RequestsInterface {
                        @Path ("request") requestId: String): Call<Void>
 
     @Headers("Content-Type: application/json")
+    @PUT("key/decline/request/{id}")
+    fun declineKeyRequest(@Header("Authorization") token: String,
+                         @Path ("id") requestId: String): Call<Void>
+
+    @Headers("Content-Type: application/json")
     @PUT("key/accept/request/{id}")
     fun acceptKeyRequest(@Header("Authorization") token: String,
                          @Path ("id") requestId: String): Call<Void>

@@ -114,7 +114,7 @@ fun KeyRequestIncomeActionsMenu(context: Context)
                             .wrapContentSize(), onClick = {
                                 coroutineScope.launch {
 
-                                    val response = requestService.deleteKeyRequest(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
+                                    val response = requestService.declineKeyRequest(AUTHORIZE_TOKEN, keyInRequest.value.id).awaitResponse()
 
                                     if (response.isSuccessful)
                                     {
@@ -133,7 +133,7 @@ fun KeyRequestIncomeActionsMenu(context: Context)
                             colors = ButtonDefaults.buttonColors(Color(0xFFEF5350)))
                         {
                             DefaultText(
-                                text = "Удалить заявку",
+                                text = "Отклонить заявку",
                                 size = 20,
                                 modifier = Modifier.fillMaxWidth(),
                             )
