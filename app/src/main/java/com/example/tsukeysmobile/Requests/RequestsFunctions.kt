@@ -34,7 +34,7 @@ class RequestsFunctions {
         return suspendCoroutine { continuation ->
             val keysInterface = retrofit.create(KeysInterface::class.java)
             val retrofitData =
-                keysInterface.getKeys(AUTHORIZE_TOKEN, year, month, day, timeId, "AvailableKeys")
+                keysInterface.getKeys(AUTHORIZE_TOKEN, year, month, day, timeId)
 
             retrofitData.enqueue(object : Callback<List<KeysDataItem>> {
                 override fun onResponse(

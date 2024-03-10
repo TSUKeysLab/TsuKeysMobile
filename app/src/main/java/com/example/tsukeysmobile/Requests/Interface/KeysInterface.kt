@@ -14,13 +14,12 @@ import retrofit2.http.Query
 
 interface KeysInterface {
     @Headers("Content-Type: application/json")
-    @GET("key")
+    @GET("key/available")
     fun getKeys(@Header("Authorization") token: String,
                 @Query("year") year: Int,
                 @Query("month") month: Int,
                 @Query("day") day: Int,
-                @Query("timeId") timeId: Int,
-                @Query("gettingStatus") gettingStatus: String): Call<List<KeysDataItem>>
+                @Query("timeId") timeId: Int): Call<List<KeysDataItem>>
 
     @Headers("Content-Type: application/json")
     @POST("request/create")
