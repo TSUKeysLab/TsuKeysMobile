@@ -30,6 +30,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -47,12 +48,14 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -183,34 +186,80 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
         return selectedItem
 
     } else {
-        var text by remember { mutableStateOf(TextFieldValue("")) }
-        var maxChar = 15
-        if(type == "email"){
-            maxChar = 20
+        if(type == "password"){
+            var text by remember { mutableStateOf(TextFieldValue("")) }
+            val maxChar = 15
+
+            var passwordVisibility by remember { mutableStateOf(false) }
+            val icon = if (passwordVisibility) {
+                painterResource(id = com.google.android.material.R.drawable.design_ic_visibility)
+            } else {
+                painterResource(id = com.google.android.material.R.drawable.design_ic_visibility_off)
+            }
+
+            OutlinedTextField(
+                value = text,
+                onValueChange = {
+                    if (it.text.length <= maxChar) {
+                        text = it
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.9f),
+                shape = RoundedCornerShape(8.dp),
+                textStyle = TextStyle(color = Color.Black),
+                label = { Text(fieldText) },
+                trailingIcon = {
+                    IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                        Icon(painter = icon, contentDescription = "")
+                    }
+                },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = true,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                visualTransformation = if (passwordVisibility) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                colors = error(type, text.text),
+                maxLines = 1,
+            )
+            return text.text
         }
-        OutlinedTextField(
-            value = text,
-            onValueChange = {
-                if (it.text.length <= maxChar) {
-                    text = it
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth(0.9f),
-            shape = RoundedCornerShape(8.dp),
-            textStyle = TextStyle(color = Color.Black),
-            label = { Text(fieldText) },
-            keyboardOptions = KeyboardOptions(
-                capitalization = KeyboardCapitalization.None,
-                autoCorrect = true,
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            visualTransformation = VisualTransformation.None,
-            colors = error(type, text.text),
-            maxLines = 1,
-        )
-        return text.text
+        else{
+            var text by remember { mutableStateOf(TextFieldValue("")) }
+            var maxChar = 15
+            if(type == "email"){
+                maxChar = 20
+            }
+            OutlinedTextField(
+                value = text,
+                onValueChange = {
+                    if (it.text.length <= maxChar) {
+                        text = it
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth(0.9f),
+                shape = RoundedCornerShape(8.dp),
+                textStyle = TextStyle(color = Color.Black),
+                label = { Text(fieldText) },
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = true,
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                visualTransformation = VisualTransformation.None,
+                colors = error(type, text.text),
+                maxLines = 1,
+            )
+            return text.text
+        }
     }
 }
 

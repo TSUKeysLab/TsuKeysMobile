@@ -2,6 +2,7 @@ package com.example.tsukeysmobile.Screens
 
 import android.annotation.SuppressLint
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +31,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -37,11 +39,13 @@ import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
 import com.example.tsukeysmobile.R
+import com.example.tsukeysmobile.Requests.Error.ErrorData
 import com.example.tsukeysmobile.Requests.Keys.KeysDataItem
 import com.example.tsukeysmobile.Requests.RequestsFunctions
 import com.example.tsukeysmobile.Views.ReservationCard
 import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.backgroundCol2
+import com.google.gson.Gson
 import java.time.LocalDate
 import java.util.regex.Pattern
 
@@ -50,6 +54,8 @@ import java.util.regex.Pattern
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun CabScreen(navController: NavController, dateAndLes: String) {
+    var context = LocalContext.current
+
     val req = RequestsFunctions()
     LaunchedEffect(Unit) {
         if (req.checkUserAuth() == 401 || req.checkUserAuth() == 500) {
@@ -111,7 +117,15 @@ fun CabScreen(navController: NavController, dateAndLes: String) {
                 val date = LocalDate.parse(dateStr)
                 val numberBeforePara = numberBeforeParaStr.toInt()
                 LaunchedEffect(Unit) {
-                    keys = req.getKeys(date.year, date.monthValue, date.dayOfMonth, numberBeforePara)
+                    var resp = req.getKeys(date.year, date.monthValue, date.dayOfMonth, numberBeforePara)
+                    if(resp.code() == 200){
+                        keys = resp.body() ?: emptyList()
+                    }
+                    else{
+                        val errorResponse = Gson().fromJson(resp.errorBody()?.string(), ErrorData::class.java)
+                        Toast.makeText(context, errorResponse.Message, Toast.LENGTH_SHORT).show()
+                        navController.navigate(Screen.BookScreen.withArgs())
+                    }
                 }
 
 

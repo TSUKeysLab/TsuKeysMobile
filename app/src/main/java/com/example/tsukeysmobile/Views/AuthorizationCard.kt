@@ -1,3 +1,5 @@
+@file:Suppress("IMPLICIT_CAST_TO_ANY")
+
 package com.example.tsukeysmobile.Views
 
 
@@ -18,7 +20,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,12 +35,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.DefaultText
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.R
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -53,38 +61,86 @@ fun AuthorizationElementOutlined(fieldText: String, type: String): String {
 
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var maxChar = 15
-    if (type == "email") {
+
+    if (type == "password") {
+        var passwordVisibility by remember { mutableStateOf(false) }
+        val icon = if (passwordVisibility) {
+            painterResource(id = com.google.android.material.R.drawable.design_ic_visibility)
+        } else {
+            painterResource(id = com.google.android.material.R.drawable.design_ic_visibility_off)
+        }
+
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                if (it.text.length <= maxChar) {
+                    text = it
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.8f),
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle(color = Color.Black),
+            label = { Text(fieldText) },
+            trailingIcon = {
+                IconButton(onClick = { passwordVisibility = !passwordVisibility }) {
+                    Icon(painter = icon, contentDescription = "")
+                }
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            visualTransformation = if (passwordVisibility) {
+                VisualTransformation.None
+            } else {
+                PasswordVisualTransformation()
+            },
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black
+            ),
+            maxLines = 1,
+        )
+    } else {
         maxChar = 20
+        OutlinedTextField(
+            value = text,
+            onValueChange = {
+                if (it.text.length <= maxChar) {
+                    text = it
+                }
+            },
+            modifier = Modifier
+                .fillMaxWidth(0.8f),
+            shape = RoundedCornerShape(8.dp),
+            textStyle = TextStyle(color = Color.Black),
+            label = { Text(fieldText) },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.None,
+                autoCorrect = true,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Next
+            ),
+            visualTransformation = VisualTransformation.None,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                disabledContainerColor = Color.White,
+                focusedLabelColor = Color.White,
+                focusedBorderColor = Color.Black,
+                unfocusedBorderColor = Color.Black
+            ),
+            maxLines = 1,
+        )
     }
-    OutlinedTextField(
-        value = text,
-        onValueChange = {
-            if (it.text.length <= maxChar) {
-                text = it
-            }
-        },
-        modifier = Modifier
-            .fillMaxWidth(0.8f),
-        shape = RoundedCornerShape(8.dp),
-        textStyle = TextStyle(color = Color.Black),
-        label = { Text(fieldText) },
-        keyboardOptions = KeyboardOptions(
-            capitalization = KeyboardCapitalization.None,
-            autoCorrect = true,
-            keyboardType = KeyboardType.Text,
-            imeAction = ImeAction.Next
-        ),
-        visualTransformation = VisualTransformation.None,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = Color.White,
-            unfocusedContainerColor = Color.White,
-            disabledContainerColor = Color.White,
-            focusedLabelColor = Color.White,
-            focusedBorderColor = Color.Black,
-            unfocusedBorderColor = Color.Black
-        ),
-        maxLines = 1,
-    )
+
     return text.text
 }
 
@@ -103,7 +159,7 @@ fun AuthorizationElement(topLabel: String, text: String, type: String): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AuthorizationCard(navController: NavController, showError: Boolean): List<String> {
+fun AuthorizationCard(navController: NavController): List<String> {
 
     var email = ""
     var password = ""
@@ -137,15 +193,6 @@ fun AuthorizationCard(navController: NavController, showError: Boolean): List<St
         ) {
             password = AuthorizationElement("пароль", "Введите пароль", "password")
         }
-        if (showError) {
-
-            DefaultText(
-                text = "Неверные почта или пароль",
-                size = 15,
-                color = Color.Red,
-                modifier = Modifier
-            )
-        }
         Spacer(modifier = Modifier.height(20.dp))
         ClickableText(
             text = AnnotatedString("Зарегистрироваться"),
@@ -156,8 +203,10 @@ fun AuthorizationCard(navController: NavController, showError: Boolean): List<St
             )
         )
         Spacer(modifier = Modifier.height(3.dp))
-        Divider(modifier = Modifier
-            .fillMaxWidth(0.5f), color = Color.Black, thickness = 4.dp)
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth(0.5f), color = Color.Black, thickness = 4.dp
+        )
     }
     return listOf(email, password)
 }
