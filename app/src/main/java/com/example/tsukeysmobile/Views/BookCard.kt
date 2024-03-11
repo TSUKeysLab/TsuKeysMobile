@@ -290,7 +290,6 @@ fun BookCard(navController: NavController) {
                         trailingIcon = {
                             Icon(icon, "", modifier = Modifier.clickable {
                                 datePickerDialog.show()
-                                expanded = !expanded
                             })
                         },
                         enabled = false,
