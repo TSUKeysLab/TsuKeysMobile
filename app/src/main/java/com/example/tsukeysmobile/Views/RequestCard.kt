@@ -107,7 +107,6 @@ fun WeekDayPart(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @SuppressLint("RememberReturnType")
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestCard(
     id: String,
@@ -128,7 +127,7 @@ fun RequestCard(
             .pointerInput(Unit)
             {
                 detectTapGestures(
-                    onPress = {
+                    onTap = {
                         if (!openRequestActionsMenu)
                         {
                             request.value = requests.find { it.id == id }!!

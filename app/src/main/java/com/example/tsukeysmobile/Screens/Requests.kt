@@ -131,7 +131,7 @@ fun RequestsScreen(navController: NavController)
                 }
                 LazyColumn(
                     modifier = Modifier
-                        .weight(0.9f)
+                        .fillMaxHeight(0.888f)
                         .fillMaxWidth()
                         .background(
                             brush = Brush.horizontalGradient(
@@ -145,7 +145,6 @@ fun RequestsScreen(navController: NavController)
                         .padding(vertical = 30.dp, horizontal = 20.dp),
                 )
                 {
-
                     items(items = requests, key = { it.id })
                     { request ->
                         if (!request.visibleState.currentState && !request.visibleState.targetState) {
@@ -156,9 +155,7 @@ fun RequestsScreen(navController: NavController)
                                 .animateItemPlacement(),
                             visibleState = request.visibleState,
                             enter = scaleIn(animationSpec = tween(durationMillis = 100)),
-                            exit = slideOutHorizontally(
-                                animationSpec = tween(durationMillis = 100),
-                                targetOffsetX = { 0 }),
+                            exit = slideOutHorizontally(animationSpec = tween(durationMillis = 100), targetOffsetX = { 0 }),
                         )
                         {
                             request.element()
