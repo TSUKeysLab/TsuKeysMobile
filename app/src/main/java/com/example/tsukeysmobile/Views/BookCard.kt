@@ -1,7 +1,12 @@
 package com.example.tsukeysmobile.Views
 
+import android.app.DatePickerDialog
 import android.os.Build
+import android.util.Log
+import android.widget.DatePicker
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,8 +24,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -41,18 +50,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
+import com.google.android.material.R
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun ChangeTransportedParams(
@@ -73,7 +91,7 @@ fun ChangeTransportedParams(
         LocalDate.now().plusDays(0).toString() + " - " + selectedItemLes
 
     } else {
-
+        Log.d("1233",selectedItem)
         selectedItem + " - " + selectedItemLes
 
     }
@@ -149,16 +167,22 @@ fun BookCard(navController: NavController) {
             else -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
+    var changeMethod by remember { mutableStateOf(false)}
 
     var showError by remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf("") }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    val icon = if (expanded) {
-        Icons.Filled.KeyboardArrowDown
+    val icon = if (changeMethod) {
+        Icons.Filled.DateRange
     } else {
-        Icons.Filled.KeyboardArrowUp
+        if(expanded){
+            Icons.Filled.KeyboardArrowDown
+        }
+        else{
+            Icons.Filled.KeyboardArrowUp
+        }
     }
     var expandedLes by remember { mutableStateOf(false) }
     var selectedItemLes by remember { mutableStateOf("") }
@@ -177,6 +201,20 @@ fun BookCard(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
+        Button(
+            onClick = { changeMethod = !changeMethod },
+            modifier = Modifier
+                .offset(y = (-80).dp, x = 120.dp),
+            colors = ButtonDefaults.buttonColors(Color.White),
+            border = BorderStroke(2.dp, Color.Black)
+        )
+        {
+            Icon(
+                imageVector = if(changeMethod){Icons.Filled.DateRange}else{Icons.Filled.KeyboardArrowUp},
+                contentDescription = "",
+                modifier = Modifier.background(Color.Black)
+            )
+        }
         Row(
             modifier = Modifier.offset(y = (-100.dp)),
             verticalAlignment = Alignment.CenterVertically
@@ -195,57 +233,121 @@ fun BookCard(navController: NavController) {
             }
 
             Column(modifier = Modifier.padding(end = 12.dp, top = 12.dp, bottom = 12.dp)) {
+                if (changeMethod){
+                    val year: Int
+                    val month: Int
+                    val day: Int
 
-                OutlinedTextField(
-                    value = selectedItem,
-                    onValueChange = { selectedItem = it },
-                    modifier = Modifier
-                        .fillMaxWidth(0.85f)
-                        .onGloballyPositioned { coordinates ->
-                            textFieldSize = coordinates.size.toSize()
+                    val calendar = Calendar.getInstance()
+                    year = calendar.get(Calendar.YEAR)
+                    month = calendar.get(Calendar.MONTH)
+                    day = calendar.get(Calendar.DAY_OF_MONTH)
+                    calendar.time = Date()
+
+                    val datePickerDialog = DatePickerDialog(
+                        LocalContext.current,
+                        com.example.tsukeysmobile.R.style.DatePicker1,
+                        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+                            var realMonth = month + 1
+                            val inputFormat = SimpleDateFormat("yyyy-M-d", Locale.getDefault())
+                            val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                            val dateParse = inputFormat.parse("$year-$realMonth-$dayOfMonth")
+                            selectedItem = outputFormat.format(dateParse!!)
+                        }, year, month, day
+                    )
+
+
+                    OutlinedTextField(
+                        value = selectedItem,
+                        onValueChange = {
+                            selectedItem = it
                         },
-                    textStyle = TextStyle(color = Color.White),
-                    shape = RoundedCornerShape(16.dp),
-                    label = {
-                        Text(
-                            text = "Выберите дату",
-                            color = if (expanded == true) {
-                                if (selectedItem != "") {
-                                    Color.Black
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .onGloballyPositioned { coordinates ->
+                                textFieldSize = coordinates.size.toSize()
+                            },
+                        textStyle = TextStyle(color = Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        label = {
+                            Text(
+                                text = "Выберите дату",
+                                color = if (expanded == true) {
+                                    if (selectedItem != "") {
+                                        Color.Black
+                                    } else {
+                                        Color.White
+                                    }
                                 } else {
-                                    Color.White
+                                    if (selectedItem != "") {
+                                        Color.Black
+                                    } else {
+                                        Color.White
+                                    }
                                 }
-                            } else {
-                                if (selectedItem != "") {
-                                    Color.Black
-                                } else {
-                                    Color.White
-                                }
-                            }
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(icon, "", Modifier.clickable() { expanded = !expanded })
-                    },
-                    enabled = false,
-                    colors = errrorOfChoise(selectedItem)
-                )
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = androidx.compose.ui.Modifier
-                        .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
-                        .background(Color.Black)
-                )
-                {
-                    formattedDateList.forEach { label ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(text = label, color = Color.White)
-                            }, onClick = {
-                                selectedItem = label
-                                expanded = false
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(icon, "", modifier = Modifier.clickable {
+                                datePickerDialog.show()
                             })
+                        },
+                        enabled = false,
+                        colors = errrorOfChoise(selectedItem)
+                    )
+                }
+                else{
+                    OutlinedTextField(
+                        value = selectedItem,
+                        onValueChange = { selectedItem = it },
+                        modifier = Modifier
+                            .fillMaxWidth(0.85f)
+                            .onGloballyPositioned { coordinates ->
+                                textFieldSize = coordinates.size.toSize()
+                            },
+                        textStyle = TextStyle(color = Color.White),
+                        shape = RoundedCornerShape(16.dp),
+                        label = {
+                            Text(
+                                text = "Выберите дату",
+                                color = if (expanded == true) {
+                                    if (selectedItem != "") {
+                                        Color.Black
+                                    } else {
+                                        Color.White
+                                    }
+                                } else {
+                                    if (selectedItem != "") {
+                                        Color.Black
+                                    } else {
+                                        Color.White
+                                    }
+                                }
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(icon, "", Modifier.clickable() { expanded = !expanded })
+                        },
+                        enabled = false,
+                        colors = errrorOfChoise(selectedItem)
+                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = androidx.compose.ui.Modifier
+                            .width(with(LocalDensity.current) { textFieldSize.width.toDp() })
+                            .background(Color.Black)
+                    )
+                    {
+                        formattedDateList.forEach { label ->
+                            DropdownMenuItem(
+                                text = {
+                                    Text(text = label, color = Color.White)
+                                }, onClick = {
+                                    selectedItem = label
+                                    expanded = false
+                                })
+                        }
                     }
                 }
             }
@@ -324,9 +426,11 @@ fun BookCard(navController: NavController) {
                 }
             }
         }
-        Divider(modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .absoluteOffset(y = (-100).dp), color = Color.Black, thickness = 4.dp)
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .absoluteOffset(y = (-100).dp), color = Color.Black, thickness = 4.dp
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.9f)

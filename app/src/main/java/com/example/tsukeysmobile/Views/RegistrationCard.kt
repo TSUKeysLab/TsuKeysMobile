@@ -93,9 +93,10 @@ fun RegisterElementOutlined(fieldText: String, type: String): String {
             R.style.DatePicker1,
             { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
 
+                var realMonth = month + 1
                 val inputFormat = SimpleDateFormat("yyyy-M-d", Locale.getDefault())
                 val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                val dateParse = inputFormat.parse("$year-$month-$dayOfMonth")
+                val dateParse = inputFormat.parse("$year-$realMonth-$dayOfMonth")
                 date.value = outputFormat.format(dateParse!!)
             }, year, month, day
         )
