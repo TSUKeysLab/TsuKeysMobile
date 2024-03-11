@@ -118,7 +118,7 @@ fun RegistrationScreen(navController: NavController) {
                             name = elements[0],
                             surname = elements[1],
                             bd = elements[2],
-                            gender = elements[2],
+                            gender = elements[3],
                             email = elements[4],
                             password = elements[5]
                         )
