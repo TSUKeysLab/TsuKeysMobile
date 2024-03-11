@@ -2,6 +2,8 @@ package com.example.tsukeysmobile.Views
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -19,8 +21,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -42,6 +48,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -50,7 +57,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavController
 import com.example.tsukeysmobile.Navigation.Screen
+import com.example.tsukeysmobile.ui.theme.backgroundCol1
 import com.example.tsukeysmobile.ui.theme.requestRepeatable
+import com.google.android.material.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -149,16 +158,22 @@ fun BookCard(navController: NavController) {
             else -> date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         }
     }
+    var changeMethod by remember { mutableStateOf(false)}
 
     var showError by remember { mutableStateOf(false) }
 
     var expanded by remember { mutableStateOf(false) }
     var selectedItem by remember { mutableStateOf("") }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    val icon = if (expanded) {
-        Icons.Filled.KeyboardArrowDown
+    val icon = if (changeMethod) {
+        Icons.Filled.DateRange
     } else {
-        Icons.Filled.KeyboardArrowUp
+        if(expanded){
+            Icons.Filled.KeyboardArrowDown
+        }
+        else{
+            Icons.Filled.KeyboardArrowUp
+        }
     }
     var expandedLes by remember { mutableStateOf(false) }
     var selectedItemLes by remember { mutableStateOf("") }
@@ -177,6 +192,20 @@ fun BookCard(navController: NavController) {
         horizontalAlignment = Alignment.CenterHorizontally
     )
     {
+        Button(
+            onClick = { changeMethod = !changeMethod },
+            modifier = Modifier
+                .offset(y = (-80).dp, x = 120.dp),
+            colors = ButtonDefaults.buttonColors(Color.White),
+            border = BorderStroke(2.dp, Color.Black)
+        )
+        {
+            Icon(
+                imageVector = if(changeMethod){Icons.Filled.DateRange}else{Icons.Filled.KeyboardArrowUp},
+                contentDescription = "",
+                modifier = Modifier.background(Color.Black)
+            )
+        }
         Row(
             modifier = Modifier.offset(y = (-100.dp)),
             verticalAlignment = Alignment.CenterVertically
@@ -324,9 +353,11 @@ fun BookCard(navController: NavController) {
                 }
             }
         }
-        Divider(modifier = Modifier
-            .fillMaxWidth(0.9f)
-            .absoluteOffset(y = (-100).dp), color = Color.Black, thickness = 4.dp)
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .absoluteOffset(y = (-100).dp), color = Color.Black, thickness = 4.dp
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.9f)
