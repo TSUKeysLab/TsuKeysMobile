@@ -131,7 +131,7 @@ fun RequestsScreen(navController: NavController)
                 }
                 LazyColumn(
                     modifier = Modifier
-                        .fillMaxHeight(0.888f)
+                        .weight(0.9f)
                         .fillMaxWidth()
                         .background(
                             brush = Brush.horizontalGradient(
